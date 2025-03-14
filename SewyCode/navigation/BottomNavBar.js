@@ -25,7 +25,7 @@ export default function BottomNavBar() {
           tabBarIcon: ({ color, size }) => {
             let icon;
             switch (
-              route.name // Utiliser route.name au lieu de route.icon
+              route.name 
             ) {
               case "Accueil":
                 icon = faHouse;

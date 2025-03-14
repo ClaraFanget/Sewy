@@ -1,24 +1,15 @@
 //Ce composant est un formulaire qui permet de dessiner un rectangle. Il contient des champs pour la largeur et la longueur du rectangle. Lorsque l'utilisateur soumet le formulaire, un rectangle est dessiné avec les dimensions spécifiées. L'utilisateur peut également sauvegarder le rectangle en tant que fichier SVG ou le télécharger en tant que fichier PDF.
-import React, { useState, useRef } from "react";
-import {
-  View,
-  TextInput,
-  Button,
-  Text,
-  StyleSheet,
-  Alert,
-  Keyboard,
-} from "react-native";
+import React, { useState } from "react";
+import { View, TextInput, Button, Text, StyleSheet, Alert } from "react-native";
 import Svg, { Rect } from "react-native-svg";
 import * as Print from "expo-print";
 import { shareAsync } from "expo-sharing";
 
 //Fonction permettant d'enregistrer un dessin SVG au format PDF. Elle prend en paramètre la largeur et la longueur du rectangle à dessiner.
-/*const saveAsPDF = async ({ largeur, longueur }) => {
+
+const saveAsPDF = async () => {
   const svgContent = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="${largeur + 11}" height="${
-    longueur + 11
-  }">
+    <svg width="${largeur + 11}" height="${longueur + 11}">
       <rect x="10" y="10" width="${largeur}" height="${longueur}" stroke="black" stroke-width="2" fill="transparent"/>
     </svg>
   `;
@@ -26,52 +17,32 @@ import { shareAsync } from "expo-sharing";
   const htmlContent = `
     <html>
       <body>
+      <h1>Rectangle SVG</h1>
         ${svgContent}
       </body>
     </html>
   `;
-
   try {
-    const { uri } = await Print.printToFileAsync({ html: htmlContent });
+    /*const { uri } = await Print.printToFileAsync({ html: htmlContent });
     await shareAsync(uri, {
       mimeType: "application/pdf",
       dialogTitle: "Partager PDF",
-    });
+    });*/
+    const file = await printToFileAsync({ html: htmlContent, base64: false });
+    await shareAsync(file.uri);
     Alert.alert("Succès", "Fichier PDF enregistré !");
   } catch (error) {
     console.error("Erreur PDF :", error);
     Alert.alert("Erreur", "Impossible de générer le PDF.");
   }
-};*/
+};
 
-//Fonction permettant d'enregistrer un dessin SVG au format PDF. Elle prend en paramètre la largeur et la longueur du rectangle à dessiner.
+/*//Fonction permettant d'enregistrer un dessin SVG au format PDF. Elle prend en paramètre la largeur et la longueur du rectangle à dessiner.
 const saveAsPDF = async ({ largeur, longueur }) => {
-  // Conversion de cm en pixels (1 cm = 37.8 pixels à 96 DPI)
-  const pixelToCm = 37.8;
-
-  // Dimensions A4 en cm
-  const largeurA4Cm = 21.0; // 21 cm de large
-  const hauteurA4Cm = 29.7; // 29.7 cm de haut
-
-  // Conversion en pixels
-  const largeurA4 = largeurA4Cm * pixelToCm;
-  const hauteurA4 = hauteurA4Cm * pixelToCm;
-
-  // Marges en cm converties en pixels
-  const margeCM = 1;
-  const marge = margeCM * pixelToCm;
-
-  // Espace disponible pour le contenu
-  const largeurContenu = largeurA4 - marge * 2;
-  const hauteurContenu = hauteurA4 - marge * 2;
-
-  // Conversion des dimensions d'entrée (cm) en pixels
-  const largeurPixels = largeur * pixelToCm;
-  const longueurPixels = longueur * pixelToCm;
 
   // Calculer combien de pages sont nécessaires
-  const pagesHorizontal = Math.ceil(largeurPixels / largeurContenu);
-  const pagesVertical = Math.ceil(longueurPixels / hauteurContenu);
+  const pagesHorizontal = Math.ceil(largeur / largeurContenu);
+  const pagesVertical = Math.ceil(longueur / hauteurCo);
   const totalPages = pagesHorizontal * pagesVertical;
 
   // Générer le HTML avec plusieurs pages
@@ -129,8 +100,7 @@ const saveAsPDF = async ({ largeur, longueur }) => {
     Alert.alert("Erreur", "Impossible de générer le PDF.");
   }
 };
-
-
+*/
 
 const SvgForm = () => {
   const [keyboardStatus, setKeyboardStatus] = useState("Keyboard Hidden");
