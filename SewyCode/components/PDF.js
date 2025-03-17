@@ -18,10 +18,6 @@ const PDF = () => {
     const numPagesWidth = Math.ceil(largeur / svgWidth);
     const numPagesHeight = Math.ceil(longueur / svgHeight);
 
-    /*const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${svgWidth}" height="${svgHeight}">
-        <rect x="0" y="0" width="${svgWidth}" height="${svgHeight}" stroke="red" stroke-width="5" fill="transparent"/>
-        <rect x="10" y="10" width="${largeur}" height="${longueur}" stroke="black" stroke-width="2" fill="transparent"/>
-        </svg>`;*/
     let htmlContent = "<html><body>";
     for (let i = 0; i < numPagesWidth; i++) {
       for (let j = 0; j < numPagesHeight; j++) {
@@ -37,13 +33,6 @@ const PDF = () => {
       }
     }
     htmlContent += "</body></html>";
-    /*const htmlContent = `
-    <html>
-      <body>
-      ${svg}
-      </body>
-    </html>
-  `;*/
 
     const file = await printToFileAsync({ html: htmlContent, base64: false });
     await shareAsync(file.uri);
@@ -75,7 +64,6 @@ const PDF = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     justifyContent: "center",
     alignItems: "center",
     padding: 16,
