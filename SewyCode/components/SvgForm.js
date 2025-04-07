@@ -1,6 +1,14 @@
 //Ce composant est un formulaire qui permet de dessiner un rectangle. Il contient des champs pour la largeur et la longueur du rectangle. Lorsque l'utilisateur soumet le formulaire, un rectangle est dessiné avec les dimensions spécifiées. L'utilisateur peut également sauvegarder le rectangle en tant que fichier SVG ou le télécharger en tant que fichier PDF.
 import React, { useState } from "react";
-import { View, TextInput, Button, Text, StyleSheet, Alert } from "react-native";
+import {
+  View,
+  TextInput,
+  Button,
+  Text,
+  StyleSheet,
+  Alert,
+  PixelRatio,
+} from "react-native";
 import Svg, { Rect } from "react-native-svg";
 import * as Print from "expo-print";
 import { shareAsync } from "expo-sharing";
@@ -8,9 +16,10 @@ import { shareAsync } from "expo-sharing";
 //Fonction permettant d'enregistrer un dessin SVG au format PDF. Elle prend en paramètre la largeur et la longueur du rectangle à dessiner.
 
 const saveAsPDF = async () => {
+  console.log("saveAsPDF called");
   const svgContent = `
     <svg width="${largeur + 11}" height="${longueur + 11}">
-      <rect x="10" y="10" width="${largeur}" height="${longueur}" stroke="black" stroke-width="2" fill="transparent"/>
+      <rect x="10" y="10" width="${largeur}" height="${longueur}" stroke="black" stroke-width="2" fill="black"/>
     </svg>
   `;
 
@@ -109,6 +118,18 @@ const SvgForm = () => {
   const [isDrawn, setIsDrawn] = useState(false);
   const [svgElement, setSvgElement] = useState(null);
 
+  const cmToPx = (cm) => {
+    // Densité de pixels de l'appareil
+    const pixelRatio = PixelRatio.get();
+
+    // On considère qu'une valeur de 1 cm = 37.8 pixels à une densité de 1
+    // (Cette valeur est basée sur le standard CSS de 96 DPI où 1 pouce = 2.54 cm)
+    const pxPerCm = 37.8;
+
+    // Conversion finale en tenant compte de la densité
+    return cm * pxPerCm * pixelRatio;
+  };
+
   const handleDrawRect = () => {
     if (!largeur || !longueur) {
       Alert.alert("Erreur", "Tous les champs doivent être remplis.");
@@ -118,7 +139,7 @@ const SvgForm = () => {
       Alert.alert("Erreur", "Les valeurs doivent être positives.");
       return;
     }
-
+    console.log("Largeur:", largeur, "Longueur:", longueur);
     const rectangleSvg = (
       <Svg height="200" width="200">
         <Rect
@@ -128,7 +149,7 @@ const SvgForm = () => {
           height={longueur}
           stroke="black"
           strokeWidth="2"
-          fill="transparent"
+          fill="red"
         />
       </Svg>
     );
@@ -145,14 +166,14 @@ const SvgForm = () => {
         placeholder="Largeur"
         keyboardType="numeric"
         value={largeur}
-        onChangeText={(text) => setLargeur(text)}
+        onChangeText={(text) => setLargeur(cmToPx(text))}
       />
       <TextInput
         style={styles.input}
         placeholder="Longueur"
         keyboardType="numeric"
         value={longueur}
-        onChangeText={(text) => setLongueur(text)}
+        onChangeText={(text) => setLongueur(cmToPx(text))}
       />
       <Button title="Tracer" onPress={handleDrawRect} />
       <Button

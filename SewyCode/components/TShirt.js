@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Keyboard,
   TouchableWithoutFeedback,
+  PixelRatio,
 } from "react-native";
 import Svg, { Rect, Line, Path } from "react-native-svg";
 import { printToFileAsync } from "expo-print";
@@ -28,50 +29,63 @@ export function TShirt() {
 
   const longueurTotale = Math.max(longueurTShirt, longueurManche) + 10;
   const largeurTotale = 2 * largeurTShirt + biceps + 10;
-  console.log(largeurTotale);
 
-  console.log(
-    poitrine,
-    longueurTShirt,
-    largeurTShirt,
-    carrure,
-    buste,
-    epaule,
-    biceps,
-    longueurManche
-  );
-  const saveAsPDF = async ({ longueurTotale, largeurTotale }) => {
+  const saveAsPDF = async () => {
     const svgWidth = 1180;
     const svgHeight = 1500;
 
-    const numPagesWidth = Math.ceil(largeurTotale / svgWidth);
-    console.log(numPagesWidth);
-    const numPagesHeight = Math.ceil(longueurTotale / svgHeight);
+    const ptsPerCm = 72 / 2.54;
+
+    console.log("Taille : ", taille);
+    // Calculer les dimensions en points pour le PDF
+    const taillePoints = Math.trunc(taille * ptsPerCm);
+    const poitrinePoints = Math.trunc(poitrine * ptsPerCm);
+    const longueurTShirtPoints = Math.trunc(longueurTShirt * ptsPerCm);
+    const largeurTShirtPoints = Math.trunc(largeurTShirt * ptsPerCm);
+    const carrurePoints = Math.trunc(carrure * ptsPerCm);
+    const bustePoints = Math.trunc(buste * ptsPerCm);
+    const epaulePoints = Math.trunc(epaule * ptsPerCm);
+    const bicepsPoints = Math.trunc(biceps * ptsPerCm);
+    const longueurManchePoints = Math.trunc(longueurManche * ptsPerCm);
+
+    console.log(taille);
 
     let htmlContent = "<html><body>";
-    for (let i = 0; i < numPagesWidth; i++) {
-      for (let j = 0; j < numPagesHeight; j++) {
-        //Coordonnées des points
-        let xA = -i * svgWidth + 10;
-        let yA = -j * svgHeight + 10;
 
-        let xB = xA + buste / 2 + 4;
+    let xA = 10;
+    let yA = 10;
 
-        let yD = yA + longueurTShirt;
+    let xB = xA + bustePoints / 2 + 4;
 
-        let yE = yA + (1 / 48) * poitrine + 0.2;
+    let yD = yA + longueurTShirtPoints;
 
-        let xG = xA + (1 / 12) * poitrine;
+    let yE = yA + (1 / 48) * poitrinePoints + 0.2;
 
-        let xL1 = xG + (1 / 12) * poitrine;
-        let yL1 = yA + 4.5;
+    let xG = xA + (1 / 12) * poitrinePoints;
 
-        let xF1 = buste / 4 + 2;
-        let yF1 = taille / 8 + poitrine / 48 + 1.7;
+    let xL1 = xG + (1 / 12) * poitrinePoints;
+    let yL1 = yA + 4.5;
 
-        let xD1 = xA + largeurTShirt / 2 + 2;
-        let yD1 = yA + longueurTShirt;
-        const svg = `
+    let xF1 = bustePoints / 4 + 2;
+    let yF1 = taillePoints / 8 + poitrinePoints / 48 + 1.7;
+
+    let xD1 = xA + largeurTShirtPoints / 2 + 2;
+    let yD1 = yA + longueurTShirtPoints + 4;
+
+    let xM = carrurePoints / 4;
+    let yM = taillePoints / 8 + poitrinePoints / 48 + 1.7 - 5;
+
+    let controMx = carrurePoints / 2 - 200;
+    let controMy = taillePoints / 8 + poitrinePoints / 48 + 1.7 - 5;
+
+    <Path
+      d="M${xF1} ${yF1} C${controMx} ${controMy}, ${0} ${0}, ${xD1} ${yD1}"
+      fill="none"
+      stroke="orange"
+      strokeWidth="2"
+    />;
+
+    const svg = `
         <Svg xmlns="http://www.w3.org/2000/svg" width="${svgWidth}" height="${svgHeight}">
          
           <Rect x="0" y="0" width="${svgWidth}" height="${svgHeight}" stroke="red" stroke-width="5" fill="transparent"/>
@@ -88,20 +102,19 @@ export function TShirt() {
         <!--- GL1 --->
         <line x1="${xG}" y1="${yA}" x2="${xL1}" y2="${yL1}" stroke="red" stroke-width="2" "/>
 
-        <!--- L1F1 --->
-        <line x1="${xL1}" y1="${yL1}" x2="${xF1}" y2="${yF1}" stroke="brown" stroke-width="2" "/>
+  
 
-        <!--- F1D1 --->
-        <line x1="${xF1}" y1="${yF1}" x2="${xD1}" y2="${yD1}" stroke="orange" stroke-width="2" "/>
+        <!--- F1L1 --->
+      <Path d="M${xF1} ${yF1} C${controMx} ${controMy}, ${controMx} ${controMy}, ${xD1} ${yD1}" fill="none" stroke="orange" strokeWidth="2" />
+      <Circle cx="${controMx}" cy="${controMy}" r="5" fill="red" />
 
         <!--- D1D --->
         <line x1="${xD1}" y1="${yD1}" x2="${xA}" y2="${yD}" stroke="grey" stroke-width="2" "/>
   
         </Svg>
       `;
-        htmlContent += svg;
-      }
-    }
+    htmlContent += svg;
+
     htmlContent += "</body></html>";
 
     const file = await printToFileAsync({ html: htmlContent, base64: false });
@@ -143,21 +156,21 @@ export function TShirt() {
           style={styles.input}
           placeholder="Tour de poitrine"
           keyboardType="numeric"
-          value={Number.parseInt(poitrine, 10)}
+          value={poitrine}
           onChangeText={(text) => setPoitrine(Number(text))}
         />
         <TextInput
           style={styles.input}
           placeholder="Carrure"
           keyboardType="numeric"
-          value={Number.parseInt(carrure, 10)}
+          value={carrure}
           onChangeText={(text) => setCarrure(Number(text))}
         />
         <TextInput
           style={styles.input}
           placeholder="Tour de Buste"
           keyboardType="numeric"
-          value={Number.parseInt(buste, 10)}
+          value={buste}
           onChangeText={(text) => setBuste(Number(text))}
         />
         <TextInput
@@ -165,9 +178,7 @@ export function TShirt() {
           placeholder="Longueur de manche"
           keyboardType="numeric"
           value={epaule}
-          onChangeText={(text) => {
-            setEpaule(Number(text));
-          }}
+          onChangeText={(text) => setEpaule(Number(text))}
         />
 
         <TextInput
@@ -175,14 +186,12 @@ export function TShirt() {
           placeholder="Longueur de manche"
           keyboardType="numeric"
           value={longueurManche}
-          onChangeText={(text) => {
-            setLongueurManche(Number(text));
-          }}
+          onChangeText={(text) => setLongueurManche(Number(text))}
         />
         <Button
           title="Télécharger en PDF"
           onPress={() => {
-            saveAsPDF({ longueurTotale, largeurTotale });
+            saveAsPDF();
           }}
         />
       </View>
@@ -209,3 +218,5 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 });
+
+export default TShirt;

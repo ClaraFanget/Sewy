@@ -102,3 +102,24 @@ export const getUtilisateur = (id) => {
     return response.json();
   });
 };
+
+// Fonction de connexion de l'utilisateur
+export const logUser = (pseudo, mot_de_passe) => {
+  var data = JSON.stringify({
+    pseudo: pseudo,
+    mot_de_passe: mot_de_passe,
+  });
+
+  return fetch("http://localhost:3000/api/utilisateurs/login", {
+    method: "POST",
+    body: data,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((response) => {
+    if (!response.ok) {
+      return false;
+    }
+    return response.json();
+  });
+};
