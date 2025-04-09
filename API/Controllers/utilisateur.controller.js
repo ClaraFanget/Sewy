@@ -118,6 +118,7 @@ const logout = async (req, res) => {
   }
 };
 
+
 module.exports = {
   getUtilisateurs,
   getUtilisateur,
