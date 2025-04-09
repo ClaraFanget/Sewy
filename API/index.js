@@ -28,7 +28,7 @@ mongoose
   )
   .then(() => {
     console.log("Connected to database!");
-    app.listen(3000, () => console.log("Sever Started"));
+    app.listen(3000, "0.0.0.0", () => console.log("Sever Started"));
   })
   .catch(() => {
     console.log("Connection failed!");

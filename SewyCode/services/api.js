@@ -19,7 +19,7 @@ export const creerUtilisateur = (
   ("");
 
   // Envoie une requête POST à l'API pour créer un utilisateur
-  return fetch("http://localhost:3000/api/utilisateurs", {
+  return fetch("http://172.20.10.3:3000/api/utilisateurs", {
     method: "POST",
     body: data,
     headers: {
@@ -36,7 +36,7 @@ export const creerUtilisateur = (
 //Fonction pour supprimer un utilisateur
 export const supprimerUtilisateur = (id) => {
   // Envoie une requête Delete à l'API pour supprimer un utilisateur
-  return fetch("http://localhost:3000/api/utilisateurs/" + id, {
+  return fetch("http://172.20.10.3:3000/api/utilisateurs/" + id, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -59,7 +59,7 @@ export const modifierUtilisateur = (id, nom, prenom, mail, mot_de_passe) => {
   });
   ("");
   // Envoie une requête Delete à l'API pour modifier un utilisateur
-  return fetch("http://localhost:3000/api/utilisateurs/" + id, {
+  return fetch("http://172.20.10.3:3000/api/utilisateurs/" + id, {
     method: "PUT",
     body: data,
     headers: {
@@ -75,7 +75,7 @@ export const modifierUtilisateur = (id, nom, prenom, mail, mot_de_passe) => {
 
 // Fonction permettant de récupérer les utilisateurs
 export const getUtilisateurs = () => {
-  return fetch("http://localhost:3000/api/utilisateurs", {
+  return fetch("http://172.20.10.3:3000/api/utilisateurs", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -90,7 +90,7 @@ export const getUtilisateurs = () => {
 
 // Fonction permettant de récupérer un utilisateur en particulier
 export const getUtilisateur = (id) => {
-  return fetch("http://localhost:3000/api/utilisateurs" + id, {
+  return fetch("http://172.20.10.3:3000/api/utilisateurs" + id, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -110,7 +110,7 @@ export const logUser = (pseudo, mot_de_passe) => {
     mot_de_passe: mot_de_passe,
   });
 
-  return fetch("http://localhost:3000/api/utilisateurs/login", {
+  return fetch("http://172.20.10.3:3000/api/utilisateurs/login", {
     method: "POST",
     body: data,
     headers: {
@@ -125,7 +125,7 @@ export const logUser = (pseudo, mot_de_passe) => {
 };
 
 export const convertSvgToPdf = (svg) => {
-  return fetch("http://localhost:3000/api/convert-svg", {
+  return fetch("http://172.20.10.3:3000/api/convert-svg", {
     method: "POST",
     body: svg,
     headers: {
