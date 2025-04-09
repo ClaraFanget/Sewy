@@ -7,11 +7,16 @@ import {
   StyleSheet,
   Keyboard,
   TouchableWithoutFeedback,
+  ScrollView,
 } from "react-native";
 import Svg, { Rect, Line, Path, Circle } from "react-native-svg";
 import { printToFileAsync } from "expo-print";
 import { shareAsync } from "expo-sharing";
 import * as Print from "expo-print";
+import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
+import * as FileSystem from "expo-file-system";
+import * as Sharing from "expo-sharing";
+import { encode } from "base64-arraybuffer";
 
 export function TShirtTest() {
   const [taille, setTaille] = useState(0); // Hauteur totale (tête aux pieds)
@@ -23,6 +28,18 @@ export function TShirtTest() {
   const [tourTaille, setTourTaille] = useState(0); // Tour de taille
   const [longueurDevant, setLongueurDevant] = useState(0);
 
+  const setMensurations = () => {
+    setTaille(165);
+    setPoitrine(88);
+    setLongueurDos(42);
+    setBuste(86);
+    setDistanceEpaules(38);
+    setCarrure(34);
+    setTourTaille(72);
+    setLongueurDevant(48);
+    saveAsPDF();
+  };
+
   const saveAsPDF = async () => {
     // Définition de l'échelle pour le PDF
     const a4Width = 21; // largeur A4 en cm
@@ -30,6 +47,11 @@ export function TShirtTest() {
     const ptsPerCm = 72 / 2.54; // conversion cm en points
     const a4WidthPts = a4Width * ptsPerCm;
     const a4HeightPts = a4Height * ptsPerCm;
+
+    // Marge pour les pages
+    const marginPts = 20;
+    const effectiveWidthPts = a4WidthPts - 2 * marginPts;
+    const effectiveHeightPts = a4HeightPts - 2 * marginPts;
 
     // ------ PARTIE DOS DU PATRON ------
 
@@ -170,209 +192,383 @@ export function TShirtTest() {
     let minY = Math.min(yA, yB, yG, yK);
     let maxY = Math.max(yD, yC, yD1, yD2);
 
-    let widthTotal = maxX - minX + 100; // Ajouter une marge
-    let heightTotal = maxY - minY + 100; // Ajouter une marge
+    // Ajouter une marge
+    minX -= marginPts;
+    minY -= marginPts;
+    maxX += marginPts;
+    maxY += marginPts;
+
+    let widthTotal = maxX - minX;
+    let heightTotal = maxY - minY;
 
     // Calculer combien de pages sont nécessaires
-    let pagesHorizontal = Math.ceil(widthTotal / a4WidthPts);
-    let pagesVertical = Math.ceil(heightTotal / a4HeightPts);
+    let pagesHorizontal = Math.ceil(widthTotal / effectiveWidthPts);
+    let pagesVertical = Math.ceil(heightTotal / effectiveHeightPts);
 
-    // Créer le contenu HTML pour toutes les pages
-    let htmlContent = `
+    console.log(`Dimensions totales: ${widthTotal}x${heightTotal} pts`);
+    console.log(`Découpage en: ${pagesHorizontal}x${pagesVertical} pages A4`);
+
+    // Créer un tableau pour stocker le HTML de chaque page
+    let pagesHtml = [];
+
+    // Générer le HTML pour chaque page
+    for (let row = 0; row < pagesVertical; row++) {
+      for (let col = 0; col < pagesHorizontal; col++) {
+        // Calculer les limites de cette page (viewBox)
+        let pageMinX = minX + col * effectiveWidthPts;
+        let pageMinY = minY + row * effectiveHeightPts;
+        let pageMaxX = Math.min(pageMinX + effectiveWidthPts, maxX);
+        let pageMaxY = Math.min(pageMinY + effectiveHeightPts, maxY);
+        let pageWidth = pageMaxX - pageMinX;
+        let pageHeight = pageMaxY - pageMinY;
+
+        // Créer le SVG pour cette page
+        let pageSvg = `
+    <svg xmlns="http://www.w3.org/2000/svg" 
+        width="${a4WidthPts}px" 
+        height="${a4HeightPts}px" 
+        viewBox="${pageMinX} ${pageMinY} ${pageWidth} ${pageHeight}">
+      <!-- Indicateur de page -->
+      <text x="${pageMinX + 20}" y="${
+          pageMinY + 20
+        }" fill="black" font-size="12">
+        Page ${row * pagesHorizontal + col + 1} de ${
+          pagesHorizontal * pagesVertical
+        } (${col + 1},${row + 1})
+      </text>
+
+      <!-- Partie DOS du patron -->
+      <!-- AB: Ligne horizontale en haut -->
+      <line x1="${xA}" y1="${yA}" x2="${xB}" y2="${yB}" stroke="blue" stroke-width="2"/>
+      
+      <!-- AD: Ligne verticale à gauche -->
+      <line x1="${xA}" y1="${yA}" x2="${xD}" y2="${yD}" stroke="red" stroke-width="2"/>
+      
+      <!-- Encolure: G à E -->
+      <path d="M${xG} ${yG} Q${
+          (xG + xE) / 2
+        } ${yE}, ${xE} ${yE}" fill="none" stroke="purple" stroke-width="2"/>
+      
+      <!-- Ligne AE -->
+      <line x1="${xA}" y1="${yA}" x2="${xE}" y2="${yE}" stroke="green" stroke-width="2" stroke-dasharray="5,5"/>
+      
+      <!-- Ligne E jusqu'à E1 -->
+      <line x1="${xE}" y1="${yE}" x2="${xE1}" y2="${yE1}" stroke="green" stroke-width="2"/>
+      
+      <!-- Ligne d'épaule G à L1 -->
+      <line x1="${xG}" y1="${yG}" x2="${xL1}" y2="${yL1}" stroke="orange" stroke-width="2"/>
+      
+      <!-- Ligne hauteur d'emmanchure A à F -->
+      <line x1="${xA}" y1="${yA}" x2="${xF}" y2="${yF}" stroke="green" stroke-width="2" stroke-dasharray="5,5"/>
+      
+      <!-- Ligne F à F1 (largeur à hauteur d'emmanchure) -->
+      <line x1="${xF}" y1="${yF}" x2="${xF1}" y2="${yF1}" stroke="brown" stroke-width="2"/>
+      
+      <!-- Ligne D à D1 (largeur en bas) -->
+      <line x1="${xD}" y1="${yD}" x2="${xD1}" y2="${yD1}" stroke="blue" stroke-width="2"/>
+      
+      <!-- Ligne de côté F1 à D1 -->
+      <line x1="${xF1}" y1="${yF1}" x2="${xD1}" y2="${yD1}" stroke="green" stroke-width="2"/>
+      
+      <!-- Ligne H à L (descente de 4.5cm) -->
+      <line x1="${xH}" y1="${yH}" x2="${xL}" y2="${yL}" stroke="purple" stroke-width="2" stroke-dasharray="5,5"/>
+      
+      <!-- Ligne H à I (perpendiculaire) -->
+      <line x1="${xH}" y1="${yH}" x2="${xI}" y2="${yI}" stroke="purple" stroke-width="2" stroke-dasharray="5,5"/>
+      
+      <!-- Point M (à partir de I) -->
+      <circle cx="${xM}" cy="${yM}" r="3" fill="red"/>
+      
+      <!-- Emmanchure: courbe de L1 à F1 -->
+      <path d="M${xL1} ${yL1} C${controlX1} ${controlY1}, ${controlX2} ${controlY2}, ${xF1} ${yF1}" fill="none" stroke="red" stroke-width="2"/>
+      
+      <!-- Points de référence du dos -->
+      <circle cx="${xA}" cy="${yA}" r="3" fill="blue"/> <text x="${
+          xA - 10
+        }" y="${yA - 10}" fill="blue">A</text>
+      <circle cx="${xB}" cy="${yB}" r="3" fill="blue"/> <text x="${
+          xB + 10
+        }" y="${yB - 10}" fill="blue">B</text>
+      <circle cx="${xD}" cy="${yD}" r="3" fill="red"/> <text x="${
+          xD - 20
+        }" y="${yD + 10}" fill="red">D</text>
+      <circle cx="${xD1}" cy="${yD1}" r="3" fill="blue"/> <text x="${
+          xD1 + 10
+        }" y="${yD1 + 10}" fill="blue">D1</text>
+      <circle cx="${xE}" cy="${yE}" r="3" fill="green"/> <text x="${
+          xE - 20
+        }" y="${yE + 5}" fill="green">E</text>
+      <circle cx="${xE1}" cy="${yE1}" r="3" fill="green"/> <text x="${
+          xE1 - 20
+        }" y="${yE1 + 5}" fill="green">E1</text>
+      <circle cx="${xF}" cy="${yF}" r="3" fill="brown"/> <text x="${
+          xF - 20
+        }" y="${yF + 5}" fill="brown">F</text>
+      <circle cx="${xF1}" cy="${yF1}" r="3" fill="brown"/> <text x="${
+          xF1 + 10
+        }" y="${yF1 + 5}" fill="brown">F1</text>
+      <circle cx="${xG}" cy="${yG}" r="3" fill="orange"/> <text x="${xG}" y="${
+          yG - 10
+        }" fill="orange">G</text>
+      <circle cx="${xH}" cy="${yH}" r="3" fill="purple"/> <text x="${
+          xH - 5
+        }" y="${yH - 10}" fill="purple">H</text>
+      <circle cx="${xI}" cy="${yI}" r="3" fill="purple"/> <text x="${
+          xI + 10
+        }" y="${yI - 10}" fill="purple">I</text>
+      <circle cx="${xL}" cy="${yL}" r="3" fill="purple"/> <text x="${
+          xL - 20
+        }" y="${yL + 5}" fill="purple">L</text>
+      <circle cx="${xL1}" cy="${yL1}" r="3" fill="orange"/> <text x="${xL1}" y="${
+          yL1 - 10
+        }" fill="orange">L1</text>
+      <circle cx="${xM}" cy="${yM}" r="3" fill="red"/> <text x="${
+          xM + 10
+        }" y="${yM + 5}" fill="red">M</text>
+      
+      <!-- PARTIE DEVANT du patron -->
+      <!-- BC: Ligne verticale à droite -->
+      <line x1="${xB}" y1="${yB}" x2="${xC}" y2="${yC}" stroke="red" stroke-width="2"/>
+      
+      <!-- CB1: Ligne verticale (normalement pas nécessaire car B1 = B) -->
+      <line x1="${xC}" y1="${yC}" x2="${xB1}" y2="${yB1}" stroke="red" stroke-width="2" stroke-dasharray="5,5"/>
+      
+      <!-- Encolure avant: K à J -->
+      <path d="M${xK} ${yK} Q${controlEncolureX} ${controlEncolureY}, ${xJ} ${yJ}" fill="none" stroke="purple" stroke-width="2"/>
+      
+      <!-- Ligne B1J -->
+      <line x1="${xB1}" y1="${yB1}" x2="${xJ}" y2="${yJ}" stroke="green" stroke-width="2" stroke-dasharray="5,5"/>
+      
+      <!-- Ligne B1K -->
+      <line x1="${xB1}" y1="${yB1}" x2="${xK}" y2="${yK}" stroke="green" stroke-width="2" stroke-dasharray="5,5"/>
+      
+      <!-- Ligne B1N -->
+      <line x1="${xB1}" y1="${yB1}" x2="${xN}" y2="${yN}" stroke="purple" stroke-width="2" stroke-dasharray="5,5"/>
+      
+      <!-- Ligne NL2 -->
+      <line x1="${xN}" y1="${yN}" x2="${xL2}" y2="${yL2}" stroke="purple" stroke-width="2" stroke-dasharray="5,5"/>
+      
+      <!-- Ligne d'épaule K à L3 -->
+      <line x1="${xK}" y1="${yK}" x2="${xL3}" y2="${yL3}" stroke="orange" stroke-width="2"/>
+      
+      <!-- Ligne hauteur d'emmanchure B à F2 -->
+      <line x1="${xB}" y1="${yB}" x2="${xF2}" y2="${yF2}" stroke="green" stroke-width="2" stroke-dasharray="5,5"/>
+      
+      <!-- Ligne F2 à F3 (largeur à hauteur d'emmanchure) -->
+      <line x1="${xF2}" y1="${yF2}" x2="${xF3}" y2="${yF3}" stroke="brown" stroke-width="2"/>
+      
+      <!-- Ligne C à D2 (largeur en bas) -->
+      <line x1="${xC}" y1="${yC}" x2="${xD2}" y2="${yD2}" stroke="blue" stroke-width="2"/>
+      
+      <!-- Ligne de côté F3 à D2 -->
+      <line x1="${xF3}" y1="${yF3}" x2="${xD2}" y2="${yD2}" stroke="green" stroke-width="2"/>
+      
+      <!-- Ligne NP (perpendiculaire) -->
+      <line x1="${xN}" y1="${yN}" x2="${xP}" y2="${yP}" stroke="purple" stroke-width="2" stroke-dasharray="5,5"/>
+      
+      <!-- Ligne PQ (remonter de 5cm) -->
+      <line x1="${xP}" y1="${yP}" x2="${xQ}" y2="${yQ}" stroke="purple" stroke-width="2" stroke-dasharray="5,5"/>
+      
+      <!-- Ligne QQ1 (aller vers la gauche de 0.3cm) -->
+      <line x1="${xQ}" y1="${yQ}" x2="${xQ1}" y2="${yQ1}" stroke="purple" stroke-width="2" stroke-dasharray="5,5"/>
+      
+      <!-- Emmanchure avant: courbe de L3 à Q1 à F3 -->
+      <path d="M${xL3} ${yL3} C${controlAvantX1} ${controlAvantY1}, ${controlAvantX2} ${controlAvantY2}, ${xF3} ${yF3}" fill="none" stroke="red" stroke-width="2"/>
+      
+      <!-- Points de référence du devant -->
+      <circle cx="${xB1}" cy="${yB1}" r="3" fill="blue"/> <text x="${
+          xB1 + 10
+        }" y="${yB1 - 10}" fill="blue">B1</text>
+      <circle cx="${xC}" cy="${yC}" r="3" fill="red"/> <text x="${
+          xC + 20
+        }" y="${yC + 10}" fill="red">C</text>
+      <circle cx="${xD2}" cy="${yD2}" r="3" fill="blue"/> <text x="${
+          xD2 - 10
+        }" y="${yD2 + 10}" fill="blue">D2</text>
+      <circle cx="${xF2}" cy="${yF2}" r="3" fill="brown"/> <text x="${
+          xF2 + 20
+        }" y="${yF2 + 5}" fill="brown">F2</text>
+      <circle cx="${xF3}" cy="${yF3}" r="3" fill="brown"/> <text x="${
+          xF3 - 10
+        }" y="${yF3 + 5}" fill="brown">F3</text>
+      <circle cx="${xJ}" cy="${yJ}" r="3" fill="green"/> <text x="${
+          xJ - 5
+        }" y="${yJ - 10}" fill="green">J</text>
+      <circle cx="${xK}" cy="${yK}" r="3" fill="orange"/> <text x="${
+          xK - 5
+        }" y="${yK - 10}" fill="orange">K</text>
+      <circle cx="${xL2}" cy="${yL2}" r="3" fill="purple"/> <text x="${
+          xL2 + 20
+        }" y="${yL2 + 5}" fill="purple">L2</text>
+      <circle cx="${xL3}" cy="${yL3}" r="3" fill="orange"/> <text x="${
+          xL3 - 5
+        }" y="${yL3 - 10}" fill="orange">L3</text>
+      <circle cx="${xN}" cy="${yN}" r="3" fill="purple"/> <text x="${
+          xN + 5
+        }" y="${yN - 10}" fill="purple">N</text>
+      <circle cx="${xP}" cy="${yP}" r="3" fill="purple"/> <text x="${
+          xP + 10
+        }" y="${yP + 5}" fill="purple">P</text>
+      <circle cx="${xQ}" cy="${yQ}" r="3" fill="purple"/> <text x="${
+          xQ + 10
+        }" y="${yQ - 10}" fill="purple">Q</text>
+      <circle cx="${xQ1}" cy="${yQ1}" r="3" fill="red"/> <text x="${
+          xQ1 - 10
+        }" y="${yQ1 - 10}" fill="red">Q1</text>
+
+      <!-- Guides d'assemblage - Lignes verticales -->
+      ${
+        col < pagesHorizontal - 1
+          ? `<line x1="${pageMaxX}" y1="${pageMinY}" x2="${pageMaxX}" y2="${pageMaxY}" 
+            stroke="black" stroke-width="1" stroke-dasharray="5,5"/>`
+          : ""
+      }
+      
+      <!-- Guides d'assemblage - Lignes horizontales -->
+      ${
+        row < pagesVertical - 1
+          ? `<line x1="${pageMinX}" y1="${pageMaxY}" x2="${pageMaxX}" y2="${pageMaxY}" 
+            stroke="black" stroke-width="1" stroke-dasharray="5,5"/>`
+          : ""
+      }
+    </svg>
+    `;
+
+        // Créer le HTML pour cette page
+        let pageHtml = `
+    <!DOCTYPE html>
     <html>
     <head>
+      <meta charset="utf-8">
+      <title>Patron T-Shirt - Page ${row * pagesHorizontal + col + 1}</title>
+      <style>
+        body { margin: 0; padding: 0; }
+        .page-info { 
+          position: absolute; 
+          top: 5px; 
+          left: 5px; 
+          font-family: Arial; 
+          font-size: 10pt; 
+          color: #999;
+          z-index: 100;
+        }
+        svg {
+          margin: 0;
+          padding: 0;
+          width: 100%;
+          height: 100vh;
+        }
+      </style>
     </head>
-    <body>`;
-
-    htmlContent += `
-       
-            <svg xmlns="http://www.w3.org/2000/svg" width="${widthTotal}px" height="${heightTotal}px" viewBox="0 0 ${widthTotal} ${heightTotal}">
-              <!-- Partie DOS du patron -->
-              <!-- AB: Ligne horizontale en haut -->
-              <line x1="${xA}" y1="${yA}" x2="${xB}" y2="${yB}" stroke="blue" stroke-width="2"/>
-              
-              <!-- AD: Ligne verticale à gauche -->
-              <line x1="${xA}" y1="${yA}" x2="${xD}" y2="${yD}" stroke="red" stroke-width="2"/>
-              
-              <!-- Encolure: G à E -->
-              <path d="M${xG} ${yG} Q${
-      (xG + xE) / 2
-    } ${yE}, ${xE} ${yE}" fill="none" stroke="purple" stroke-width="2"/>
-              
-              <!-- Ligne AE -->
-              <line x1="${xA}" y1="${yA}" x2="${xE}" y2="${yE}" stroke="green" stroke-width="2" stroke-dasharray="5,5"/>
-              
-              <!-- Ligne E jusqu'à E1 -->
-              <line x1="${xE}" y1="${yE}" x2="${xE1}" y2="${yE1}" stroke="green" stroke-width="2"/>
-              
-              <!-- Ligne d'épaule G à L1 -->
-              <line x1="${xG}" y1="${yG}" x2="${xL1}" y2="${yL1}" stroke="orange" stroke-width="2"/>
-              
-              <!-- Ligne hauteur d'emmanchure A à F -->
-              <line x1="${xA}" y1="${yA}" x2="${xF}" y2="${yF}" stroke="green" stroke-width="2" stroke-dasharray="5,5"/>
-              
-              <!-- Ligne F à F1 (largeur à hauteur d'emmanchure) -->
-              <line x1="${xF}" y1="${yF}" x2="${xF1}" y2="${yF1}" stroke="brown" stroke-width="2"/>
-              
-              <!-- Ligne D à D1 (largeur en bas) -->
-              <line x1="${xD}" y1="${yD}" x2="${xD1}" y2="${yD1}" stroke="blue" stroke-width="2"/>
-              
-              <!-- Ligne de côté F1 à D1 -->
-              <line x1="${xF1}" y1="${yF1}" x2="${xD1}" y2="${yD1}" stroke="green" stroke-width="2"/>
-              
-              <!-- Ligne H à L (descente de 4.5cm) -->
-              <line x1="${xH}" y1="${yH}" x2="${xL}" y2="${yL}" stroke="purple" stroke-width="2" stroke-dasharray="5,5"/>
-              
-              <!-- Ligne H à I (perpendiculaire) -->
-              <line x1="${xH}" y1="${yH}" x2="${xI}" y2="${yI}" stroke="purple" stroke-width="2" stroke-dasharray="5,5"/>
-              
-              <!-- Point M (à partir de I) -->
-              <circle cx="${xM}" cy="${yM}" r="3" fill="red"/>
-              
-              <!-- Emmanchure: courbe de L1 à F1 -->
-              <path d="M${xL1} ${yL1} C${controlX1} ${controlY1}, ${controlX2} ${controlY2}, ${xF1} ${yF1}" fill="none" stroke="red" stroke-width="2"/>
-              
-              <!-- Points de référence du dos -->
-              <circle cx="${xA}" cy="${yA}" r="3" fill="blue"/> <text x="${
-      xA - 10
-    }" y="${yA - 10}" fill="blue">A</text>
-              <circle cx="${xB}" cy="${yB}" r="3" fill="blue"/> <text x="${
-      xB + 10
-    }" y="${yB - 10}" fill="blue">B</text>
-              <circle cx="${xD}" cy="${yD}" r="3" fill="red"/> <text x="${
-      xD - 20
-    }" y="${yD + 10}" fill="red">D</text>
-              <circle cx="${xD1}" cy="${yD1}" r="3" fill="blue"/> <text x="${
-      xD1 + 10
-    }" y="${yD1 + 10}" fill="blue">D1</text>
-              <circle cx="${xE}" cy="${yE}" r="3" fill="green"/> <text x="${
-      xE - 20
-    }" y="${yE + 5}" fill="green">E</text>
-              <circle cx="${xE1}" cy="${yE1}" r="3" fill="green"/> <text x="${
-      xE1 - 20
-    }" y="${yE1 + 5}" fill="green">E1</text>
-              <circle cx="${xF}" cy="${yF}" r="3" fill="brown"/> <text x="${
-      xF - 20
-    }" y="${yF + 5}" fill="brown">F</text>
-              <circle cx="${xF1}" cy="${yF1}" r="3" fill="brown"/> <text x="${
-      xF1 + 10
-    }" y="${yF1 + 5}" fill="brown">F1</text>
-              <circle cx="${xG}" cy="${yG}" r="3" fill="orange"/> <text x="${xG}" y="${
-      yG - 10
-    }" fill="orange">G</text>
-              <circle cx="${xH}" cy="${yH}" r="3" fill="purple"/> <text x="${
-      xH - 5
-    }" y="${yH - 10}" fill="purple">H</text>
-              <circle cx="${xI}" cy="${yI}" r="3" fill="purple"/> <text x="${
-      xI + 10
-    }" y="${yI - 10}" fill="purple">I</text>
-              <circle cx="${xL}" cy="${yL}" r="3" fill="purple"/> <text x="${
-      xL - 20
-    }" y="${yL + 5}" fill="purple">L</text>
-              <circle cx="${xL1}" cy="${yL1}" r="3" fill="orange"/> <text x="${xL1}" y="${
-      yL1 - 10
-    }" fill="orange">L1</text>
-              <circle cx="${xM}" cy="${yM}" r="3" fill="red"/> <text x="${
-      xM + 10
-    }" y="${yM + 5}" fill="red">M</text>
-              
-              <!-- PARTIE DEVANT du patron -->
-              <!-- BC: Ligne verticale à droite -->
-              <line x1="${xB}" y1="${yB}" x2="${xC}" y2="${yC}" stroke="red" stroke-width="2"/>
-              
-              <!-- CB1: Ligne verticale (normalement pas nécessaire car B1 = B) -->
-              <line x1="${xC}" y1="${yC}" x2="${xB1}" y2="${yB1}" stroke="red" stroke-width="2" stroke-dasharray="5,5"/>
-              
-              <!-- Encolure avant: K à J -->
-              <path d="M${xK} ${yK} Q${controlEncolureX} ${controlEncolureY}, ${xJ} ${yJ}" fill="none" stroke="purple" stroke-width="2"/>
-              
-              <!-- Ligne B1J -->
-              <line x1="${xB1}" y1="${yB1}" x2="${xJ}" y2="${yJ}" stroke="green" stroke-width="2" stroke-dasharray="5,5"/>
-              
-              <!-- Ligne B1K -->
-              <line x1="${xB1}" y1="${yB1}" x2="${xK}" y2="${yK}" stroke="green" stroke-width="2" stroke-dasharray="5,5"/>
-              
-              <!-- Ligne B1N -->
-              <line x1="${xB1}" y1="${yB1}" x2="${xN}" y2="${yN}" stroke="purple" stroke-width="2" stroke-dasharray="5,5"/>
-              
-              <!-- Ligne NL2 -->
-              <line x1="${xN}" y1="${yN}" x2="${xL2}" y2="${yL2}" stroke="purple" stroke-width="2" stroke-dasharray="5,5"/>
-              
-              <!-- Ligne d'épaule K à L3 -->
-              <line x1="${xK}" y1="${yK}" x2="${xL3}" y2="${yL3}" stroke="orange" stroke-width="2"/>
-              
-              <!-- Ligne hauteur d'emmanchure B à F2 -->
-              <line x1="${xB}" y1="${yB}" x2="${xF2}" y2="${yF2}" stroke="green" stroke-width="2" stroke-dasharray="5,5"/>
-              
-              <!-- Ligne F2 à F3 (largeur à hauteur d'emmanchure) -->
-              <line x1="${xF2}" y1="${yF2}" x2="${xF3}" y2="${yF3}" stroke="brown" stroke-width="2"/>
-              
-              <!-- Ligne C à D2 (largeur en bas) -->
-              <line x1="${xC}" y1="${yC}" x2="${xD2}" y2="${yD2}" stroke="blue" stroke-width="2"/>
-              
-              <!-- Ligne de côté F3 à D2 -->
-              <line x1="${xF3}" y1="${yF3}" x2="${xD2}" y2="${yD2}" stroke="green" stroke-width="2"/>
-              
-              <!-- Ligne NP (perpendiculaire) -->
-              <line x1="${xN}" y1="${yN}" x2="${xP}" y2="${yP}" stroke="purple" stroke-width="2" stroke-dasharray="5,5"/>
-              
-              <!-- Ligne PQ (remonter de 5cm) -->
-              <line x1="${xP}" y1="${yP}" x2="${xQ}" y2="${yQ}" stroke="purple" stroke-width="2" stroke-dasharray="5,5"/>
-              
-              <!-- Ligne QQ1 (aller vers la gauche de 0.3cm) -->
-              <line x1="${xQ}" y1="${yQ}" x2="${xQ1}" y2="${yQ1}" stroke="purple" stroke-width="2" stroke-dasharray="5,5"/>
-              
-              <!-- Emmanchure avant: courbe de L3 à Q1 à F3 -->
-              <path d="M${xL3} ${yL3} C${controlAvantX1} ${controlAvantY1}, ${controlAvantX2} ${controlAvantY2}, ${xF3} ${yF3}" fill="none" stroke="red" stroke-width="2"/>
-              
-              <!-- Points de référence du devant -->
-              <circle cx="${xB1}" cy="${yB1}" r="3" fill="blue"/> <text x="${
-      xB1 + 10
-    }" y="${yB1 - 10}" fill="blue">B1</text>
-              <circle cx="${xC}" cy="${yC}" r="3" fill="red"/> <text x="${
-      xC + 20
-    }" y="${yC + 10}" fill="red">C</text>
-              <circle cx="${xD2}" cy="${yD2}" r="3" fill="blue"/> <text x="${
-      xD2 - 10
-    }" y="${yD2 + 10}" fill="blue">D2</text>
-              <circle cx="${xF2}" cy="${yF2}" r="3" fill="brown"/> <text x="${
-      xF2 + 20
-    }" y="${yF2 + 5}" fill="brown">F2</text>
-              <circle cx="${xF3}" cy="${yF3}" r="3" fill="brown"/> <text x="${
-      xF3 - 10
-    }" y="${yF3 + 5}" fill="brown">F3</text>
-              <circle cx="${xJ}" cy="${yJ}" r="3" fill="green"/> <text x="${
-      xJ - 5
-    }" y="${yJ - 10}" fill="green">J</text>
-              <circle cx="${xK}" cy="${yK}" r="3" fill="orange"/> <text x="${
-      xK - 5
-    }" y="${yK - 10}" fill="orange">K</text>
-              <circle cx="${xL2}" cy="${yL2}" r="3" fill="purple"/> <text x="${
-      xL2 + 20
-    }" y="${yL2 + 5}" fill="purple">L2</text>
-              <circle cx="${xL3}" cy="${yL3}" r="3" fill="orange"/> <text x="${
-      xL3 - 5
-    }" y="${yL3 - 10}" fill="orange">L3</text>
-              <circle cx="${xN}" cy="${yN}" r="3" fill="purple"/> <text x="${
-      xN + 5
-    }" y="${yN - 10}" fill="purple">N</text>
-              <circle cx="${xP}" cy="${yP}" r="3" fill="purple"/> <text x="${
-      xP + 10
-    }" y="${yP + 5}" fill="purple">P</text>
-              <circle cx="${xQ}" cy="${yQ}" r="3" fill="purple"/> <text x="${
-      xQ + 10
-    }" y="${yQ - 10}" fill="purple">Q</text>
-              <circle cx="${xQ1}" cy="${yQ1}" r="3" fill="red"/> <text x="${
-      xQ1 - 10
-    }" y="${yQ1 - 10}" fill="red">Q1</text>
-            </svg>
-        `;
-
-    `
+    <body>
+      <div class="page-info">
+        Patron T-Shirt - Page ${row * pagesHorizontal + col + 1} de ${
+          pagesHorizontal * pagesVertical
+        }
+      </div>
+      ${pageSvg}
     </body>
-    </html>`;
+    </html>
+    `;
 
-    // Génération et partage du PDF
+        pagesHtml.push(pageHtml);
+      }
+    }
+
+    // Générer le PDF avec toutes les pages
+    let htmlContent = pagesHtml[0]; // La première page seulement pour le test
+
+    // Générer un PDF pour chaque page HTML
+    let pdfFiles = [];
+    for (let i = 0; i < pagesHtml.length; i++) {
+      const file = await printToFileAsync({
+        html: pagesHtml[i],
+        base64: false,
+        margins: {
+          left: 0,
+          top: 0,
+          right: 0,
+          bottom: 0,
+        },
+      });
+      pdfFiles.push(file.uri);
+    }
+
+    // Utiliser PDFLib pour fusionner tous les PDFs en un seul
+    if (pdfFiles.length > 1) {
+      const mergedPdf = await PDFDocument.create();
+
+      for (let i = 0; i < pdfFiles.length; i++) {
+        const pdfData = await FileSystem.readAsStringAsync(pdfFiles[i], {
+          encoding: FileSystem.EncodingType.Base64,
+        });
+        const pdfDoc = await PDFDocument.load(pdfData);
+        const pages = await mergedPdf.copyPages(
+          pdfDoc,
+          pdfDoc.getPageIndices()
+        );
+
+        for (const page of pages) {
+          mergedPdf.addPage(page);
+        }
+      }
+
+      const mergedPdfBytes = await mergedPdf.save();
+
+      // Convertir le PDF fusionné en Base64
+      const base64String = encode(mergedPdfBytes);
+
+      // Créer un fichier temporaire pour le PDF fusionné
+      const mergedPdfPath = FileSystem.documentDirectory + "patron_tshirt.pdf";
+      await FileSystem.writeAsStringAsync(mergedPdfPath, base64String, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      // Partager le PDF fusionné
+      await shareAsync(mergedPdfPath);
+
+      // Nettoyer les fichiers temporaires
+      for (let file of pdfFiles) {
+        try {
+          await FileSystem.deleteAsync(file);
+        } catch (error) {
+          console.log(
+            "Erreur lors de la suppression d'un fichier temporaire:",
+            error
+          );
+        }
+      }
+    } else {
+      // S'il n'y a qu'une seule page, partager directement
+      await shareAsync(pdfFiles[0]);
+    }
+  };
+  const hundleCarre = async () => {
+    const largeur = 5;
+    console.log("largeur2", largeur);
+    let htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head >
+        <meta charset="utf-8">
+        <title>Rectangle PDF</title>
+      </head>
+      <body>
+        <svg 
+             width="21cm" 
+             height="29.7cm" 
+             xmlns="http://www.w3.org/2000/svg">
+          <rect x="20" y="20" 
+                width="${largeur}cm" 
+                height="${largeur}cm" 
+                stroke="black" 
+                stroke-width="1" 
+                fill="none"/>
+        </svg>
+      </body>
+      </html>
+    `;
+    console.log("hundleCarre called 2");
     const file = await printToFileAsync({
       html: htmlContent,
       base64: false,
@@ -453,6 +649,16 @@ export function TShirtTest() {
           onChangeText={(text) => setLongueurDevant(Number(text))}
         />
         <Button title="Télécharger en PDF" onPress={saveAsPDF} />
+        <Button
+          title="Télécharger Avec Mensurations"
+          onPress={setMensurations}
+        />
+        <Button
+          title="Tracé carré"
+          onPress={() => {
+            hundleCarre();
+          }}
+        />
       </View>
     </TouchableWithoutFeedback>
   );

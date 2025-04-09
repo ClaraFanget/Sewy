@@ -123,3 +123,20 @@ export const logUser = (pseudo, mot_de_passe) => {
     return response.json();
   });
 };
+
+export const convertSvgToPdf = (svg) => {
+  return fetch("http://localhost:3000/api/convert-svg", {
+    method: "POST",
+    body: svg,
+    headers: {
+      "Content-Type": "image/svg+xml",
+    },
+  }).then(async (response) => {
+    if (!response.ok) {
+      throw new Error("Erreur serveur");
+    }
+
+    const { base64 } = await response.json();
+    return base64;
+  });
+};

@@ -1,0 +1,5 @@
+Type,Point_1_X,Point_1_Y,Point_2_X,Point_2_Y,Point_3_X,Point_3_Y
+ligne,0,0,50,0,,
+ligne,50,0,50,60,,
+ligne,50,60,0,60,,
+ligne,0,60,0,0,,

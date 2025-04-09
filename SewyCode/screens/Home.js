@@ -6,6 +6,7 @@ export default function HomeScreen() {
   return (
     <ScrollView>
       <Text>Bienvenue sur l'accueil !</Text>
+      <Text>Voici un aperçu de l'application :</Text>
       <TShirtTest />
     </ScrollView>
   );

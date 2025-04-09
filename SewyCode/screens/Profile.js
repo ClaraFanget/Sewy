@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, Button } from "react-native";
 import AddUsers from "../components/AddUsers";
+import Patron from "../components/Patron";
 
 export default function ProfileScreen() {
   const handleLogout = async () => {
@@ -10,7 +11,8 @@ export default function ProfileScreen() {
   return (
     <View flex={1} justifyContent="center" alignItems="center">
       <Text>Page de Profil</Text>
-      <AddUsers />
+      
+      <Patron />
       <Button title="Déconnexion" onPresse={handleLogout} />
     </View>
   );
