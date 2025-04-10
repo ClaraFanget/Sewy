@@ -47,8 +47,8 @@ export function Patron() {
     // ------ PARTIE DOS DU PATRON ------
 
     // Point A - Point de départ en haut à gauche
-    let xA = 50;
-    let yA = 50;
+    let xA = 0;
+    let yA = 0;
 
     // AB = tour de buste/2 + 4 cm d'aisance
     let xB = xA + (buste / 2 + 4) * ptsPerCm;
@@ -110,48 +110,68 @@ export function Patron() {
     let controlX2 = xM - 120;
     let controlY2 = yM + 60;
 
-    console.log(
-      "xA:",
-      xA,
-      "xB:",
-      xB,
-      "xD:",
-      xD,
-      "xE:",
-      xE,
-      "xF:",
-      xF,
-      "xH:",
-      xH,
-      "xI:",
-      xI,
-      "xL:",
-      xL,
-      "xM:",
-      xM
-    );
-    console.log(
-      "buste:",
-      buste,
-      "poitrine:",
-      poitrine,
-      "taille:",
-      taille,
-      "longueurDos:",
-      longueurDos,
-      "tourTaille:",
-      tourTaille,
-      "carrure:",
-      carrure,
-      "distanceEpaules:",
-      distanceEpaules
-    );
+    // ------ PARTIE DEVANT DU PATRON ------
+
+    // BC = AD (même hauteur du patron)
+    let xC = xB;
+    let yC = yD;
+
+    // CB1 = longueur cou-taille mesurée devant
+    let xB1 = xC;
+    let yB1 = yB - ((poitrine / 12 + 1) / 2) * ptsPerCm;
+
+    // B1J = 1/12 tour de poitrine + 1 cm (profondeur d'encolure)
+    let xJ = xB1;
+    let yJ = yB + ((poitrine / 12 + 1) / 2) * ptsPerCm;
+
+    // B1K = 1/12 tour de poitrine (point de départ de l'épaule)
+    let xK = xB1 - (poitrine / 12) * ptsPerCm;
+    let yK = yB1;
+
+    // B1N = 1/2 carrure – 1 cm
+    let xN = xB1 - (carrure / 2 - 1) * ptsPerCm;
+    let yN = yB1;
+
+    // F2F3 = FF1 = 1/4 tour de buste + aisance (2cm)
+    let xF3 = xF1;
+    let yF3 = yF1;
+
+    // NL2 = descendre de 6,5 cm
+    let xL2 = xN;
+    let yL2 = yN + 6.5 * ptsPerCm;
+
+    // CD2 = 1/4 tour de taille + aisance
+    let xD2 = xC - (tourTaille / 4 + 2) * ptsPerCm;
+    let yD2 = yC;
+
+    // NP = perpendiculaire à F2F3, P étant le point d'intersection
+    let xP = xN;
+    let yP = yF1;
+
+    // PQ = remonter de 5 cm
+    let xQ = xP;
+    let yQ = yP - 5 * ptsPerCm;
+
+    // QQ1 = aller vers la gauche de 0,3 cm
+    let xQ1 = xQ - 0.3 * ptsPerCm;
+    let yQ1 = yQ;
+
+    let xL3 = xL2 - 2 * ptsPerCm;
+    let yL3 = yL2;
+
+    // Point de contrôle pour la courbe d'emmanchure
+    let controlX3 = (xL3 + xQ) / 2 - 4;
+    let controlY3 = yL3 + 30;
+
+    let controlX4 = xQ + 100;
+    let controlY4 = yQ + 40;
 
     const widthMax = Math.max(xA, xB, xD, xE, xF, xH, xI, xL, xM) / ptsPerCm;
     console.log("widthMax en points:", widthMax);
-    const heightMax = Math.max(yA, yB, yD, yE, yF, yH, yI, yL, yM) / ptsPerCm;
+    const heightMax =
+      Math.max(yA, yB, yD, yE, yF, yH, yI, yK, yL, yM) / ptsPerCm;
 
-    console.log("widthMax", widthMax);
+    console.log("heightMax :", heightMax, yK);
 
     let svg = `
     <svg xmlns="http://www.w3.org/2000/svg" 
@@ -160,7 +180,9 @@ export function Patron() {
         viewBox="0 0 21cm 29.7cm">
     
 
-      <!-- Partie DOS du patron -->
+      <!-- **********************Partie DOS du patron********************** -->
+
+
       <!-- AB: Ligne horizontale en haut -->
       <line x1="${xA}" y1="${yA}" x2="${xB}" y2="${yB}" stroke="blue" stroke-width="2"/>
       
@@ -204,16 +226,51 @@ export function Patron() {
       
       <!-- Emmanchure: courbe de L1 à F1 -->
       <path d="M${xL1} ${yL1} C${controlX1} ${controlY1}, ${controlX2} ${controlY2}, ${xF1} ${yF1}" fill="none" stroke="red" stroke-width="2"/>
+
+
+
+      <!-- **********************PARTIE DEVANT du patron********************** -->
+
+
+      <!-- JC: Ligne verticale à droite -->
+      <line x1="${xJ}" y1="${yJ}" x2="${xC}" y2="${yC}" stroke="red" stroke-width="2"/>
+      
+      <!-- CB1: Ligne verticale (normalement pas nécessaire car B1 = B) -->
+      <line x1="${xC}" y1="${yC}" x2="${xB1}" y2="${yB1}" stroke="red" stroke-width="2" stroke-dasharray="5,5"/>
+      
+      <!-- Encolure avant: K à J -->
+      <path d="M${xK} ${yK} Q${xK + 3} ${
+      yK + 3
+    }, ${xJ} ${yJ}" fill="none" stroke="purple" stroke-width="2"/>
+      
+      <!-- Ligne NL2 -->
+      <line x1="${xN}" y1="${yN}" x2="${xL2}" y2="${yL2}" stroke="purple" stroke-width="2" stroke-dasharray="5,5"/>
+      
+      <!-- Ligne d'épaule K à L3 -->
+      <line x1="${xK}" y1="${yK}" x2="${xL3}" y2="${yL3}" stroke="orange" stroke-width="2"/>
+      
+      <!-- Ligne C à D2 (largeur en bas) -->
+      <line x1="${xC}" y1="${yC}" x2="${xD2}" y2="${yD2}" stroke="blue" stroke-width="2"/>
+      
+      <!-- Ligne de côté F3 à D2 -->
+      <line x1="${xF3}" y1="${yF3}" x2="${xD2}" y2="${yD2}" stroke="green" stroke-width="2"/>
+  
+      
+      <!-- Emmanchure avant: courbe de L3 à Q1 à F3 -->
+      <path d="M${xL3} ${yL3} C${controlX3} ${controlY3}, ${controlX4} ${controlY4}, ${xF3} ${yF3}" fill="none" stroke="red" stroke-width="2"/>
+      <!-- Point M (à partir de I) -->
+      <circle cx="${controlX3}" cy="${controlY3}" r="3" fill="black"/>
+      <circle cx="${controlX4}" cy="${controlY4}" r="3" fill="brown"/>
       
     </svg>
     `;
+
     return svg;
   };
   // Ancien nom : SVGToJPG
   const generatePDFfromSVG = async (svg) => {
     try {
       const responseBase64 = await convertSvgToPdf(svg); // Appelle ton backend
-      console.log("Conversion SVG vers PDF réussie", svg);
 
       const fileUri = FileSystem.documentDirectory + "patron.pdf";
 
@@ -230,7 +287,7 @@ export function Patron() {
   const saveAsPDF = async () => {
     console.log("saveAsPDF called");
     const svg = await TracerPatron();
-    console.log("SVG généré", svg);
+    //console.log("SVG généré", svg);
     await generatePDFfromSVG(svg); // nouveau nom de fonction
   };
 

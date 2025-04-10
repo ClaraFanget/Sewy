@@ -4,6 +4,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import BottomNavBar from "./navigation/BottomNavBar.js";
 import Connexion from "./screens/Connexion.js";
 import Inscription from "./screens/Inscription.js";
+import { UserProvider } from "./context/UserContext";
 
 const Stack = createStackNavigator();
 
@@ -17,6 +18,7 @@ export default function App() {
   // Si l'utilisateur est authentifié, afficher BottomNavBar (qui contient Home)
   // Sinon, afficher les écrans de connexion et d'inscription
   return (
+    <UserProvider>
     <NavigationContainer>
       {isAuthenticated ? (
         <BottomNavBar />
@@ -29,5 +31,6 @@ export default function App() {
         </Stack.Navigator>
       )}
     </NavigationContainer>
+    </UserProvider>
   );
 }

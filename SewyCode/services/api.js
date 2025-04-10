@@ -1,12 +1,5 @@
 // Fonction pour créer un nouvel utilisateur
-export const creerUtilisateur = (
-  nom,
-  prenom,
-  pseudo,
-  mot_de_passe,
-  mail,
-  taille
-) => {
+export const creerUtilisateur = (nom, prenom, pseudo, mot_de_passe, mail) => {
   // Crée un objet JSON avec le pseudo, le mot de passe et l'e-mail
   var data = JSON.stringify({
     nom: nom,
@@ -14,7 +7,6 @@ export const creerUtilisateur = (
     pseudo: pseudo,
     mot_de_passe: mot_de_passe,
     mail: mail,
-    taille: taille,
   });
   ("");
 
@@ -50,10 +42,8 @@ export const supprimerUtilisateur = (id) => {
 };
 
 //Fonction pour modifier un utilisateur
-export const modifierUtilisateur = (id, nom, prenom, mail, mot_de_passe) => {
+export const modifierUtilisateur = (id, mail, mot_de_passe) => {
   var data = JSON.stringify({
-    nom: nom,
-    prenom: prenom,
     mot_de_passe: mot_de_passe,
     mail: mail,
   });

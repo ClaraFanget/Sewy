@@ -1,12 +1,16 @@
 import React from "react";
-import { View, Text } from "react-native";
-import TShirtFinal from "../components/TShirtFinal";
+import { View, Text, ScrollView } from "react-native";
+import Patron from "../components/Patron";
+import Header from "../components/Header";
 
 export default function MeasurementsScreen() {
   return (
-    <View flex={1} justifyContent="center" alignItems="center">
-      <Text>Page des Mensurations</Text>
-      <TShirtFinal />
-    </View>
+    <ScrollView>
+      <View>
+        <Header />
+        <Text>Page des Mensurations</Text>
+        <Patron />
+      </View>
+    </ScrollView>
   );
 }

@@ -20,6 +20,9 @@ export default function BottomNavBar() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
+        headerShown: false,
+        tabBarActiveTintColor: "#648DCB", // <-- ici
+        tabBarInactiveTintColor: "#aaa",
         tabBarIcon: ({ color, size }) => {
           let icon;
           switch (route.name) {
@@ -43,8 +46,8 @@ export default function BottomNavBar() {
       })}
     >
       <Tab.Screen name="Accueil" component={HomeScreen} />
-      <Tab.Screen name="Enregistrés" component={SavedScreen} />
       <Tab.Screen name="Mensurations" component={MeasurementsScreen} />
+      <Tab.Screen name="Enregistrés" component={SavedScreen} />
       <Tab.Screen name="Profil" component={ProfileScreen} />
     </Tab.Navigator>
   );

@@ -1,22 +1,23 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet } from "react-native";
 import { logUser } from "../services/api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useUser } from "../context/UserContext";
 
 const Connexion = ({ navigation, onLoginSuccess }) => {
   const [pseudo, setPseudo] = useState("");
   const [mot_de_passe, setMotDePasse] = useState("");
+  const { login } = useUser();
 
   const handleSignIn = async () => {
     if (pseudo && mot_de_passe) {
-      onLoginSuccess();
-      /*const isLogged = await logUser(pseudo, mot_de_passe); // <-- Ajouter await
+      const isLogged = await logUser(pseudo, mot_de_passe);
       if (isLogged) {
+        login(isLogged.user);
         onLoginSuccess();
       } else {
         alert("Identifiants incorrects");
       }
-      */
-      onLoginSuccess();
     } else {
       alert("Veuillez entrer un pseudo et un mot de passe");
     }

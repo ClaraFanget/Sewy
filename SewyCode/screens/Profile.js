@@ -1,19 +1,24 @@
 import React from "react";
-import { View, Text, Button } from "react-native";
+import { View, Text, Button, ScrollView } from "react-native";
 import AddUsers from "../components/AddUsers";
-import Patron from "../components/Patron";
+import Header from "../components/Header";
+import { useUser } from "../context/UserContext";
+import UpdateUsers from "../components/UpdateUsers";
 
 export default function ProfileScreen() {
+  const { user } = useUser();
   const handleLogout = async () => {
     setIsAuthenticated(false);
   };
 
   return (
-    <View flex={1} justifyContent="center" alignItems="center">
-      <Text>Page de Profil</Text>
-      
-      <Patron />
-      <Button title="Déconnexion" onPresse={handleLogout} />
-    </View>
+    <ScrollView>
+      <View>
+        <Header />
+        <Text>Bienvenue {user.pseudo}</Text>
+        <UpdateUsers />
+        <Button title="Déconnexion" onPresse={handleLogout} />
+      </View>
+    </ScrollView>
   );
 }
