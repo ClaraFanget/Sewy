@@ -44,10 +44,13 @@ export function Patron() {
   const TracerPatron = async () => {
     const ptsPerCm = 72 / 2.54; // conversion cm en points
 
+    let xDebut = 0;
+    let yDebut = 0;
+
     // ------ PARTIE DOS DU PATRON ------
 
     // Point A - Point de départ en haut à gauche
-    let xA = 0;
+    let xA = ((poitrine / 12 + 1) / 2) * ptsPerCm;
     let yA = 0;
 
     // AB = tour de buste/2 + 4 cm d'aisance
@@ -166,10 +169,11 @@ export function Patron() {
     let controlX4 = xQ + 100;
     let controlY4 = yQ + 40;
 
-    const widthMax = Math.max(xA, xB, xD, xE, xF, xH, xI, xL, xM) / ptsPerCm;
+    const widthMax =
+      Math.max(xDebut, xA, xB, xD, xE, xF, xH, xI, xL, xM) / ptsPerCm;
     console.log("widthMax en points:", widthMax);
     const heightMax =
-      Math.max(yA, yB, yD, yE, yF, yH, yI, yK, yL, yM) / ptsPerCm;
+      Math.max(yDebut, yA, yB, yD, yE, yF, yH, yI, yK, yL, yM) / ptsPerCm;
 
     console.log("heightMax :", heightMax, yK);
 

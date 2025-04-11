@@ -1,16 +1,17 @@
 //Ce composant est un formulaire qui permet d'ajouter un nouvel utilisateur. Il contient des champs pour le nom, le prénom, le pseudo, le mot de passe, l'e-mail et la taille de l'utilisateur. Lorsque l'utilisateur soumet le formulaire, les données sont envoyées à l'API pour créer un nouvel utilisateur. Si la création réussit, un message de succès est affiché à l'utilisateur. Sinon, un message d'erreur est affiché.
 import React, { useState } from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
-import { creerUtilisateur, modifierUtilisateur } from "../services/api.js";
-import { useUser } from "../context/UserContext";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
+import PatronCard from "./PatronCard";
 
-const PatronCard = () => {
+const PatronCardList = () => {
   return (
     <View style={styles.container}>
-      <Image
-        source={require("../assets/patrons/debardeur.png")}
-        style={styles.coverImage}
-      />
+      <ScrollView horizontal={true}>
+        <PatronCard />
+        <PatronCard />
+        <PatronCard />
+        <PatronCard />
+      </ScrollView>
     </View>
   );
 };
@@ -41,4 +42,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PatronCard;
+export default PatronCardList;

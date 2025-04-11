@@ -27,7 +27,7 @@ const UpdateUsers = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Ajouter un utilisateur</Text>
+      <Text style={styles.title}>Modifier un utilisateur</Text>
       <TextInput
         style={styles.input}
         placeholder="E-mail"

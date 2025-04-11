@@ -6,7 +6,6 @@ const Inscription = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <AddUsers />
-
       <Button title="Retour" onPress={() => navigation.goBack()} />
     </View>
   );
