@@ -50,8 +50,8 @@ export function Patron() {
     // ------ PARTIE DOS DU PATRON ------
 
     // Point A - Point de départ en haut à gauche
-    let xA = ((poitrine / 12 + 1) / 2) * ptsPerCm;
-    let yA = 0;
+    let xA = 0;
+    let yA = ((poitrine / 12 + 1) / 2) * ptsPerCm;
 
     // AB = tour de buste/2 + 4 cm d'aisance
     let xB = xA + (buste / 2 + 4) * ptsPerCm;
@@ -121,7 +121,7 @@ export function Patron() {
 
     // CB1 = longueur cou-taille mesurée devant
     let xB1 = xC;
-    let yB1 = yB - ((poitrine / 12 + 1) / 2) * ptsPerCm;
+    let yB1 = 0;
 
     // B1J = 1/12 tour de poitrine + 1 cm (profondeur d'encolure)
     let xJ = xB1;
@@ -133,7 +133,7 @@ export function Patron() {
 
     // B1N = 1/2 carrure – 1 cm
     let xN = xB1 - (carrure / 2 - 1) * ptsPerCm;
-    let yN = yB1;
+    let yN = 0;
 
     // F2F3 = FF1 = 1/4 tour de buste + aisance (2cm)
     let xF3 = xF1;
@@ -171,11 +171,8 @@ export function Patron() {
 
     const widthMax =
       Math.max(xDebut, xA, xB, xD, xE, xF, xH, xI, xL, xM) / ptsPerCm;
-    console.log("widthMax en points:", widthMax);
     const heightMax =
       Math.max(yDebut, yA, yB, yD, yE, yF, yH, yI, yK, yL, yM) / ptsPerCm;
-
-    console.log("heightMax :", heightMax, yK);
 
     let svg = `
     <svg xmlns="http://www.w3.org/2000/svg" 
@@ -242,10 +239,9 @@ export function Patron() {
       <!-- CB1: Ligne verticale (normalement pas nécessaire car B1 = B) -->
       <line x1="${xC}" y1="${yC}" x2="${xB1}" y2="${yB1}" stroke="red" stroke-width="2" stroke-dasharray="5,5"/>
       
-      <!-- Encolure avant: K à J -->
-      <path d="M${xK} ${yK} Q${xK + 3} ${
-      yK + 3
-    }, ${xJ} ${yJ}" fill="none" stroke="purple" stroke-width="2"/>
+    <!-- Encolure: K à J -->
+      <path d="M${xK} ${yK} Q${xK} ${yJ}, ${xJ} ${yJ}" fill="none" stroke="purple" stroke-width="2"/>
+    
       
       <!-- Ligne NL2 -->
       <line x1="${xN}" y1="${yN}" x2="${xL2}" y2="${yL2}" stroke="purple" stroke-width="2" stroke-dasharray="5,5"/>
