@@ -21,25 +21,39 @@ const UtilisateurSchema = mongoose.Schema(
       type: String,
       required: [true, "Veuille entrer une adresse mail"],
     },
-    photo_profil: {
-      type: String,
-      required: false,
-    },
-    taille: {
-      type: Number,
-      required: false,
-    },
-    tour_poitrine: {
-      type: Number,
-      required: false,
-    },
-    tour_taille: {
-      type: Number,
-      required: false,
-    },
-    tour_hanches: {
-      type: Number,
-      required: false,
+    mensurations: {
+      taille: {
+        type: Number,
+        required: false,
+      },
+      poitrine: {
+        type: Number,
+        required: false,
+      },
+      longueurDos: {
+        type: Number,
+        required: false,
+      },
+      buste: {
+        type: Number,
+        required: false,
+      },
+      distanceEpaules: {
+        type: Number,
+        required: false,
+      },
+      carrure: {
+        type: Number,
+        required: false,
+      },
+      tourTaille: {
+        type: Number,
+        required: false,
+      },
+      longueurDevant: {
+        type: Number,
+        required: false,
+      },
     },
   },
   {

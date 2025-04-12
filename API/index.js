@@ -15,6 +15,7 @@ app.use(express.json());
 
 //routes
 app.use("/api/utilisateurs", utilisateurRoute);
+app.use("/api/utilisateur", utilisateurRoute);
 
 app.get("/", (req, res) => {
   res.send("Hello from Node API test");

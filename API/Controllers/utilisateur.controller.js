@@ -64,7 +64,7 @@ const logUser = async (req, res) => {
 
     // Si tout est valide, renvoyer les données de l'utilisateur sans le mot de passe
     const userWithoutPassword = {
-      _id: utilisateur._id,
+      id: utilisateur._id,
       pseudo: utilisateur.pseudo,
       // Ajoutez ici les autres champs que vous souhaitez renvoyer
       // firstName: utilisateur.firstName,
@@ -117,7 +117,6 @@ const logout = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 module.exports = {
   getUtilisateurs,

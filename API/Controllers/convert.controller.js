@@ -5,9 +5,7 @@ const A4_WIDTH_CM = 21.0;
 const A4_HEIGHT_CM = 29.7;
 const CM_TO_PT = 72 / 2.54;
 const A4_WIDTH_PT = A4_WIDTH_CM * CM_TO_PT;
-console.log("A4_WIDTH_PT", A4_WIDTH_PT);
 const A4_HEIGHT_PT = A4_HEIGHT_CM * CM_TO_PT;
-console.log("A4_HEIGHT_PT", A4_HEIGHT_PT);
 
 const convertSvgToPdf = async (req, res) => {
   try {
