@@ -80,7 +80,7 @@ export const getUtilisateurs = () => {
 
 // Fonction permettant de récupérer un utilisateur en particulier
 export const getUtilisateur = (id) => {
-  return fetch("http://172.20.10.3:3000/api/utilisateurs" + id, {
+  return fetch("http://172.20.10.3:3000/api/utilisateur/" + id, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
