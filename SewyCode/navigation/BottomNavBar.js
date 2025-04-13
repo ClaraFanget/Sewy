@@ -13,6 +13,8 @@ import HomeScreen from "../screens/Home";
 import SavedScreen from "../screens/Saved";
 import ProfileScreen from "../screens/Profile";
 import MeasurementsScreen from "../screens/Measurements";
+import ProfileStackNavigator from "./ProfileStackNavigator";
+import ProfileNavigation from "./ProfileStackNavigator";
 
 const Tab = createBottomTabNavigator();
 
@@ -48,7 +50,7 @@ export default function BottomNavBar() {
       <Tab.Screen name="Accueil" component={HomeScreen} />
       <Tab.Screen name="Mensurations" component={MeasurementsScreen} />
       <Tab.Screen name="Enregistrés" component={SavedScreen} />
-      <Tab.Screen name="Profil" component={ProfileScreen} />
+      <Tab.Screen name="Profil" component={ProfileNavigation} />
     </Tab.Navigator>
   );
 }

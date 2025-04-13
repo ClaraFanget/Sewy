@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, ScrollView } from "react-native";
-import Patron from "../components/Patron";
+import Patron from "./Patron";
 import Header from "../components/Header";
 
 export default function MeasurementsScreen() {

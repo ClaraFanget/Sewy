@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   TextInput,
@@ -17,9 +17,11 @@ import { error, PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing";
 import { encode } from "base64-arraybuffer";
-import { convertSvgToPdf } from "../services/api";
+import { convertSvgToPdf, getUtilisateur } from "../services/api";
+import { useUser } from "../context/UserContext";
 
 export function Patron() {
+  const { user } = useUser();
   const [taille, setTaille] = useState(0); // Hauteur totale (tête aux pieds)
   const [poitrine, setPoitrine] = useState(0); // Tour de poitrine
   const [longueurDos, setLongueurDos] = useState(0); // Hauteur dos (base du cou à la taille)
@@ -28,17 +30,31 @@ export function Patron() {
   const [carrure, setCarrure] = useState(0); // Largeur du dos sous les aisselles
   const [tourTaille, setTourTaille] = useState(0); // Tour de taille
   const [longueurDevant, setLongueurDevant] = useState(0);
+  const [pdfReady, setPdfReady] = useState(false);
 
-  const setMensurations = () => {
-    setTaille(165);
-    setPoitrine(88);
-    setLongueurDos(42);
-    setBuste(86);
-    setDistanceEpaules(38);
-    setCarrure(34);
-    setTourTaille(72);
-    setLongueurDevant(48);
-    saveAsPDF();
+  useEffect(() => {
+    if (pdfReady) {
+      saveAsPDF();
+      setPdfReady(false);
+    }
+  }, [pdfReady]);
+  const setMensurations = async () => {
+    try {
+      const utilisateurData = await getUtilisateur(user.id);
+      const mensurations = utilisateurData.mensurations;
+      setTaille(String(mensurations.taille));
+      setPoitrine(String(mensurations.poitrine));
+      setLongueurDos(String(mensurations.longueurDos));
+      setBuste(String(mensurations.buste));
+      setDistanceEpaules(String(mensurations.distanceEpaules));
+      setCarrure(String(mensurations.carrure));
+      setTourTaille(String(mensurations.tourTaille));
+      setLongueurDevant(String(mensurations.longueurDevant));
+      console.log("Mensurations remplies");
+      setPdfReady(true);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des données :", error);
+    }
   };
 
   const TracerPatron = async () => {
@@ -285,10 +301,8 @@ export function Patron() {
   };
 
   const saveAsPDF = async () => {
-    console.log("saveAsPDF called");
     const svg = await TracerPatron();
-    //console.log("SVG généré", svg);
-    await generatePDFfromSVG(svg); // nouveau nom de fonction
+    await generatePDFfromSVG(svg);
   };
 
   return (

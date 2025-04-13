@@ -1,25 +1,29 @@
 //Ce composant est un formulaire qui permet d'ajouter un nouvel utilisateur. Il contient des champs pour le nom, le prénom, le pseudo, le mot de passe, l'e-mail et la taille de l'utilisateur. Lorsque l'utilisateur soumet le formulaire, les données sont envoyées à l'API pour créer un nouvel utilisateur. Si la création réussit, un message de succès est affiché à l'utilisateur. Sinon, un message d'erreur est affiché.
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, TextInput, Button, Text, StyleSheet, Alert } from "react-native";
-import { creerUtilisateur, modifierUtilisateur } from "../services/api.js";
-import { useUser } from "../context/UserContext";
+import { getUtilisateur, updateMail } from "../services/api.js";
+import { useUser } from "../context/UserContext.js";
 
-const UpdateUsers = () => {
-  const [mot_de_passe, setMotDePasse] = useState("");
+const UpdateMail = ({ navigation }) => {
   const [mail, setMail] = useState("");
+  const [previousMail, setPreviousMail] = useState("");
   const { user } = useUser();
 
-  const handleUpdateUser = async () => {
-    if (!mot_de_passe || !mail) {
+  const handleUpdateMail = async () => {
+    const dataActuelle = await getUtilisateur(user.id);
+    if (!mail || !previousMail) {
       Alert.alert("Erreur", "Tous les champs doivent être remplis.");
       return;
     }
-    console.log(user.id);
+    if (dataActuelle.mail !== previousMail) {
+      Alert.alert("Erreur", "L'email actuel est incorrect.");
+      return;
+    }
     try {
-      const response = await modifierUtilisateur(user.id, mail, mot_de_passe);
-      Alert.alert("Succès", "Utilisateur modifié avec succès !");
+      const response = await updateMail(user.id, mail);
+      Alert.alert("Succès", "Votre adresse mail a été modifiée avec succès !");
     } catch (error) {
-      Alert.alert("Impossible de modifier l'utilisateur.", error.message);
+      Alert.alert("Impossible de modifier l'adresse mail.", error.message);
     } finally {
       setLoading(false);
     }
@@ -27,22 +31,22 @@ const UpdateUsers = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Modifier un utilisateur</Text>
+      <Text style={styles.title}>Modifier son adresse mail</Text>
       <TextInput
         style={styles.input}
-        placeholder="E-mail"
-        value={mail}
-        onChangeText={setMail}
+        placeholder="E-mail actuel"
+        value={previousMail}
+        onChangeText={setPreviousMail}
         keyboardType="email-address"
       />
       <TextInput
         style={styles.input}
-        placeholder="Mot de passe"
-        value={mot_de_passe}
-        onChangeText={setMotDePasse}
-        secureTextEntry={true}
+        placeholder="Nouvel e-mail"
+        value={mail}
+        onChangeText={setMail}
       />
-      <Button title="Modifier" onPress={handleUpdateUser} />
+      <Button title="Modifier" onPress={handleUpdateMail} />
+      <Button title="Retour" onPress={() => navigation.goBack()} />
     </View>
   );
 };
@@ -69,4 +73,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default UpdateUsers;
+export default UpdateMail;

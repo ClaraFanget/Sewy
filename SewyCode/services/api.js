@@ -42,13 +42,70 @@ export const supprimerUtilisateur = (id) => {
 };
 
 //Fonction pour modifier un utilisateur
-export const modifierUtilisateur = (id, mail, mot_de_passe) => {
+export const updateMail = (id, mail) => {
   var data = JSON.stringify({
-    mot_de_passe: mot_de_passe,
     mail: mail,
   });
   ("");
-  // Envoie une requête Delete à l'API pour modifier un utilisateur
+
+  return fetch("http://172.20.10.3:3000/api/utilisateurs/" + id, {
+    method: "PUT",
+    body: data,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((response) => {
+    if (!response.ok) {
+      throw new Error("Erreur");
+    }
+    return response.json();
+  });
+};
+export const updatePassword = (id, password) => {
+  var data = JSON.stringify({
+    mot_de_passe: password,
+  });
+  ("");
+
+  return fetch("http://172.20.10.3:3000/api/utilisateurs/" + id, {
+    method: "PUT",
+    body: data,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((response) => {
+    if (!response.ok) {
+      throw new Error("Erreur");
+    }
+    return response.json();
+  });
+};
+
+export const updateMeasurement = (
+  id,
+  taille,
+  poitrine,
+  longueurDos,
+  buste,
+  epaules,
+  carrure,
+  tourTaille,
+  longueurDevant
+) => {
+  var data = JSON.stringify({
+    mensurations: {
+      taille: taille,
+      poitrine: poitrine,
+      longueurDos: longueurDos,
+      buste: buste,
+      distanceEpaules: epaules,
+      carrure: carrure,
+      tourTaille: tourTaille,
+      longueurDevant: longueurDevant,
+    },
+  });
+  ("");
+
   return fetch("http://172.20.10.3:3000/api/utilisateurs/" + id, {
     method: "PUT",
     body: data,
