@@ -1,7 +1,12 @@
+/**
+ * Le composant Connexion permet à l'utilisateur de se connecter en utilisant un pseudo et un mot de 
+ * passe. Il gère la connexion grâce à une requête API pour valider les identifiants et gère la 
+ * navigation vers l'écran d'inscription si nécessaire.
+ */
+
 import React, { useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet } from "react-native";
 import { logUser } from "../services/api";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useUser } from "../context/UserContext";
 
 const Connexion = ({ navigation, onLoginSuccess }) => {
@@ -9,6 +14,7 @@ const Connexion = ({ navigation, onLoginSuccess }) => {
   const [mot_de_passe, setMotDePasse] = useState("");
   const { login } = useUser();
 
+  //handleSignIn permet de gérer la connexion de l'utilisateur en faisant une requete à l'API pour vérifier que les identifiants sont bons.
   const handleSignIn = async () => {
     if (pseudo && mot_de_passe) {
       const isLogged = await logUser(pseudo, mot_de_passe);

@@ -14,9 +14,7 @@ export default function App() {
   const handleLoginSuccess = () => {
     setIsAuthenticated(true);
   };
-  
-  // Si l'utilisateur est authentifié, afficher BottomNavBar (qui contient Home)
-  // Sinon, afficher les écrans de connexion et d'inscription
+
   return (
     <UserProvider>
     <NavigationContainer>

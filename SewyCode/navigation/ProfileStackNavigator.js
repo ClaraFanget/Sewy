@@ -1,4 +1,7 @@
-// navigation/ProfileStackNavigator.js
+/**
+ * Le composant ProfileStackNavigator configure la navigation pour l'écran profil de l'application.
+ */
+
 import React from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import ProfileScreen from "../screens/Profile";

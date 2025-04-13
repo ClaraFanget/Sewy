@@ -1,4 +1,6 @@
-//Ce composant est un formulaire qui permet d'ajouter un nouvel utilisateur. Il contient des champs pour le nom, le prénom, le pseudo, le mot de passe, l'e-mail et la taille de l'utilisateur. Lorsque l'utilisateur soumet le formulaire, les données sont envoyées à l'API pour créer un nouvel utilisateur. Si la création réussit, un message de succès est affiché à l'utilisateur. Sinon, un message d'erreur est affiché.
+/**
+ * Le composant UpdatePassword permettant à l'utilisateur de modifier son mot d epasse
+ */
 import React, { useState, useEffect } from "react";
 import { View, TextInput, Button, Text, StyleSheet, Alert } from "react-native";
 import { getUtilisateur, updatePassword } from "../services/api.js";
@@ -9,6 +11,7 @@ const UpdatePassword = ({ navigation }) => {
   const [previousPassword, setPreviousPassword] = useState("");
   const { user } = useUser();
 
+  //handleUpdatePassword vérifie que les champs sont bien remplis. Grâce à une requête à l'API elle vérifie aussi que l'ancien mot de passe correspond bien à celui enregistré dans la base de données. Enfin si tout est bon elle modifie le mot de passe de l'utilisateur
   const handleUpdatePassword = async () => {
     const dataActuelle = await getUtilisateur(user.id);
     if (!password || !previousPassword) {

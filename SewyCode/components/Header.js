@@ -1,25 +1,33 @@
-import React, { useState } from "react";
+/**
+ * Le composant Header affiche le logo de l'application
+ * centré à l'écran.
+ */
+
+import React from "react";
 import { View, StyleSheet, Image } from "react-native";
 
 const Header = () => {
   return (
     <View style={styles.container}>
-      <Image source={require("../assets/logo/logo.png")} style={styles.logo} />
+      <Image
+        source={require("../assets/images/logo/logo.png")}
+        style={styles.logo}
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, // occupe tout l'écran
-    justifyContent: "center", // centre verticalement
-    alignItems: "center", // centre horizontalement
-    backgroundColor: "#fff", // facultatif, pour voir le fond
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff",
   },
   logo: {
     width: 100,
     height: 200,
-    resizeMode: "contain", // ou 'cover' selon ton besoin
+    resizeMode: "contain",
     margin: 0,
     alignContent: "center",
   },

@@ -1,4 +1,7 @@
-//Ce composant est un formulaire qui permet d'ajouter un nouvel utilisateur. Il contient des champs pour le nom, le prénom, le pseudo, le mot de passe, l'e-mail et la taille de l'utilisateur. Lorsque l'utilisateur soumet le formulaire, les données sont envoyées à l'API pour créer un nouvel utilisateur. Si la création réussit, un message de succès est affiché à l'utilisateur. Sinon, un message d'erreur est affiché.
+/**
+ * Le composant UpdateMeasurement permettant à l'utilisateur de modifier ses mensurations
+ */
+
 import React, { useState, useEffect } from "react";
 import { View, TextInput, Button, Text, StyleSheet, Alert } from "react-native";
 import { getUtilisateur, updateMeasurement } from "../services/api.js";
@@ -37,6 +40,7 @@ const UpdateMeasurement = ({ navigation }) => {
     }
   }, [user]);
 
+  //handleUpdateMeasurement vérifie que tous les champs sont remplis et modifie les mensurations de l'utilisateur dans la base de données grâce à une requête à l'API
   const handleUpdateMeasurement = async () => {
     if (
       !taille ||

@@ -9,7 +9,7 @@ const app = express();
 app.use("/api", convertRoute);
 
 //middleware
-app.use(express.urlencoded({ extended: true })); //permet de remplir la BDD avec form et pas seulement JSON
+app.use(express.urlencoded({ extended: true }));
 
 app.use(express.json());
 

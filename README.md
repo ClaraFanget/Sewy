@@ -1,1 +1,2 @@
 # Sewy
+Pour lancer le projet, aller dans SewyCode et exécuter "npm install" puis “npx expo start” et enfin “i” pour lancer sur un émulateur Iphone ou scanner le QR Code pour ouvrir le projet sur Expo Go (attention être connecté sur le même réseau sur l’ordinateur et sur le téléphone). Enfin pour lancer l’API aller dans API puis exécuter “npm install” puis “npm run dev”.

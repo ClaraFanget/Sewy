@@ -1,17 +1,18 @@
+/**
+ * Le composant ProfileScreen affiche les informations de l'utilisateur connecté,
+ * avec des options pour modifier l'adresse mail, le mot de passe et les mensurations.
+ */
+
 import React, { useEffect, useState } from "react";
 import { View, Text, Button, ScrollView } from "react-native";
-import AddUsers from "../components/AddUsers";
 import Header from "../components/Header";
 import { useUser } from "../context/UserContext";
-import UpdateUsers from "./UpdateMail";
-import { getUtilisateur, getUtilisateurs } from "../services/api";
+import { getUtilisateur } from "../services/api";
 
 export default function ProfileScreen({ navigation }) {
   const { user } = useUser();
   const [utilisateur, setUtilisateur] = useState();
-  const handleLogout = async () => {
-    setIsAuthenticated(false);
-  };
+
   useEffect(() => {
     getUtilisateur(user.id).then((data) => {
       setUtilisateur(data);
@@ -23,7 +24,7 @@ export default function ProfileScreen({ navigation }) {
       <View>
         <Header />
         <Text>
-          Bienvenue {utilisateur ? utilisateur.pseudo : "Chargement..."}
+          Bienvenue {utilisateur ? utilisateur.prenom : "Chargement..."}
         </Text>
         <Button
           title="Modifier mon adresse mail"
@@ -37,7 +38,6 @@ export default function ProfileScreen({ navigation }) {
           title="Modifier mes mensurations"
           onPress={() => navigation.navigate("EditMeasurements")}
         />
-        <Button title="Déconnexion" onPress={handleLogout} />
       </View>
     </ScrollView>
   );

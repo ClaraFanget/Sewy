@@ -1,4 +1,9 @@
-//Ce composant est un formulaire qui permet d'ajouter un nouvel utilisateur. Il contient des champs pour le nom, le prénom, le pseudo, le mot de passe, l'e-mail et la taille de l'utilisateur. Lorsque l'utilisateur soumet le formulaire, les données sont envoyées à l'API pour créer un nouvel utilisateur. Si la création réussit, un message de succès est affiché à l'utilisateur. Sinon, un message d'erreur est affiché.
+/**
+ * Le composant AddUsers est un formulaire qui permet d'ajouter un nouvel utilisateur. Il contient * des champs pour le nom, le prénom, le pseudo, le mot de passe, l'e-mail et la taille de
+ * l'utilisateur. Lorsque l'utilisateur soumet le formulaire, les données sont envoyées à l'API pour
+ * créer un nouvel utilisateur.
+ */
+
 import React, { useState } from "react";
 import { View, TextInput, Button, Text, StyleSheet, Alert } from "react-native";
 import { creerUtilisateur } from "../services/api.js";
@@ -11,6 +16,7 @@ const AddUsers = () => {
   const [mail, setMail] = useState("");
   const [loading, setLoading] = useState(false);
 
+  //handleAddUser vérifie que tous les champs sont remplis, si oui elle envoie une requête à l'API pour créer un nouvel utilisateur.
   const handleAddUser = async () => {
     if (!nom || !prenom || !pseudo || !mot_de_passe || !mail) {
       Alert.alert("Erreur", "Tous les champs doivent être remplis.");

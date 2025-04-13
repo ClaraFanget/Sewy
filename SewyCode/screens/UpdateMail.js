@@ -1,4 +1,7 @@
-//Ce composant est un formulaire qui permet d'ajouter un nouvel utilisateur. Il contient des champs pour le nom, le prénom, le pseudo, le mot de passe, l'e-mail et la taille de l'utilisateur. Lorsque l'utilisateur soumet le formulaire, les données sont envoyées à l'API pour créer un nouvel utilisateur. Si la création réussit, un message de succès est affiché à l'utilisateur. Sinon, un message d'erreur est affiché.
+/**
+ * Le composant UpdateMail permettant à l'utilisateur de modifier son adresse email.
+ */
+
 import React, { useState, useEffect } from "react";
 import { View, TextInput, Button, Text, StyleSheet, Alert } from "react-native";
 import { getUtilisateur, updateMail } from "../services/api.js";
@@ -9,6 +12,7 @@ const UpdateMail = ({ navigation }) => {
   const [previousMail, setPreviousMail] = useState("");
   const { user } = useUser();
 
+  //handleUpdateMail vérifie que les champs sont bien remplis. Grâce à une requête à l'API elle vérifie aussi que l'ancienne adresse mail correspond bien à celle enregistrée dans la base de données. Enfin si tout est bon elle modifie l'adresse mail de l'utilisateur
   const handleUpdateMail = async () => {
     const dataActuelle = await getUtilisateur(user.id);
     if (!mail || !previousMail) {

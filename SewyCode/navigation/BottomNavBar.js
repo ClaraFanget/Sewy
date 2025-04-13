@@ -1,4 +1,7 @@
-//Ce composant est une barre de navigation en bas de l'écran. Le composant utilise la bibliothèque react-navigation pour gérer la navigation entre les écrans.
+/**
+ * Le composant BottomNavBar est une barre de navigation qui permet de naviguer sur l'application.
+ */
+
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
@@ -11,9 +14,7 @@ import {
 
 import HomeScreen from "../screens/Home";
 import SavedScreen from "../screens/Saved";
-import ProfileScreen from "../screens/Profile";
 import MeasurementsScreen from "../screens/Measurements";
-import ProfileStackNavigator from "./ProfileStackNavigator";
 import ProfileNavigation from "./ProfileStackNavigator";
 
 const Tab = createBottomTabNavigator();

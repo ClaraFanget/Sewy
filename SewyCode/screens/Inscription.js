@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet } from "react-native";
+import React from "react";
+import { View, Button, StyleSheet } from "react-native";
 import AddUsers from "../components/AddUsers";
 
 const Inscription = ({ navigation }) => {

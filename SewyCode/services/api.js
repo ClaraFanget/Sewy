@@ -41,7 +41,7 @@ export const supprimerUtilisateur = (id) => {
   });
 };
 
-//Fonction pour modifier un utilisateur
+//Fonction pour modifier l'adresse mail d'un utilisateur
 export const updateMail = (id, mail) => {
   var data = JSON.stringify({
     mail: mail,
@@ -61,6 +61,7 @@ export const updateMail = (id, mail) => {
     return response.json();
   });
 };
+//Fonction pour modifier le mot de passe d'un utilisateur
 export const updatePassword = (id, password) => {
   var data = JSON.stringify({
     mot_de_passe: password,
@@ -80,7 +81,7 @@ export const updatePassword = (id, password) => {
     return response.json();
   });
 };
-
+//Fonction pour modifier les mensurations d'un utilisateur
 export const updateMeasurement = (
   id,
   taille,
@@ -170,7 +171,7 @@ export const logUser = (pseudo, mot_de_passe) => {
     return response.json();
   });
 };
-
+// Fonction permettant de convertir un SVG en PDF
 export const convertSvgToPdf = (svg) => {
   return fetch("http://172.20.10.3:3000/api/convert-svg", {
     method: "POST",

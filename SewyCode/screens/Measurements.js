@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, ScrollView } from "react-native";
-import Patron from "./Patron";
+import Pattern from "../components/Pattern";
 import Header from "../components/Header";
 
 export default function MeasurementsScreen() {
@@ -9,7 +9,7 @@ export default function MeasurementsScreen() {
       <View>
         <Header />
         <Text>Page des Mensurations</Text>
-        <Patron />
+        <Pattern />
       </View>
     </ScrollView>
   );

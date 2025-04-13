@@ -1,3 +1,16 @@
+/**
+ * Le controller convert.controller convertit un SVG reçu en un fichier PDF format A4. 
+ * 
+ * Étapes principales :
+ * 1. Le SVG est converti en image JPEG avec fond blanc via la bibliothèque Sharp.
+ * 2. L’image est ensuite découpée en plusieurs pages A4.
+ * 3. Chaque partie est ajoutée à une nouvelle page d’un document PDF 
+ * 
+ * Bibliothèques utilisées :
+ * - `sharp` pour le traitement d’image
+ * - `pdf-lib` pour la génération du PDF
+ */
+
 const sharp = require("sharp");
 const { PDFDocument, StandardFonts, rgb } = require("pdf-lib");
 
@@ -11,20 +24,20 @@ const convertSvgToPdf = async (req, res) => {
   try {
     const svg = req.body;
 
-    // Convertit le SVG en image JPEG avec fond blanc
+ 
     const jpgBuffer = await sharp(Buffer.from(svg))
       .flatten({ background: { r: 255, g: 255, b: 255 } })
       .jpeg({ quality: 100 })
       .toBuffer();
 
-    // Obtenir dimensions de l'image
+
     const metadata = await sharp(jpgBuffer).metadata();
     const imgWidth = metadata.width;
     const imgHeight = metadata.height;
 
     const pdfDoc = await PDFDocument.create();
 
-    // Nombre de pages nécessaires
+  
     const cols = Math.ceil(imgWidth / A4_WIDTH_PT);
     const rows = Math.ceil(imgHeight / A4_HEIGHT_PT);
 
@@ -51,13 +64,13 @@ const convertSvgToPdf = async (req, res) => {
 
         page.drawImage(tileImage, {
           x: 0,
-          y: A4_HEIGHT_PT - cropHeight, // pour positionner en haut
+          y: A4_HEIGHT_PT - cropHeight, 
           width: cropWidth,
           height: cropHeight,
         });
-        const rowLabel = String.fromCharCode(65 + row); // 65 = "A"
+        const rowLabel = String.fromCharCode(65 + row); 
         const colLabel = (col + 1).toString();
-        const label = `${rowLabel}${colLabel}`; // ex: "B3"
+        const label = `${rowLabel}${colLabel}`; 
 
         page.drawText(label, {
           x: 300,
