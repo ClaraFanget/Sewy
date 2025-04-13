@@ -4,13 +4,29 @@ Ce projet se compose de deux parties :
 - **API** 
 - **SewyCode** 
 
-## 🚀 Installation du projet
+## Installation du projet
 
 ### 1. Lancer l'API
 
-Ouvrir une première fenêtre VSCode dans le dossier `API` puis exécute :
+Ouvrir une première fenêtre VSCode dans le dossier `API` puis exécuter :
 
 ```bash
-cd API
 npm install
+```
+```bash
 npm run dev
+```
+Une fois la base de données et l'API lancées
+
+### 2. Lancer l'application
+
+Ouvrir une deuxieme fenêtre VSCode dans le dossier `SewyCode` puis exécuter :
+
+```bash
+npm install
+```
+```bash
+npx expo start
+```
+Pour visualiser l'application vous pouvez télécharger expo go sur votre téléphone et scanner le QR Code. **Attention** à être connecté au même réseau sécurisé entre le téléphone et l'ordinateur.
+Sinon pour vous tapez "i" ou "a" dans le terminal pour ouvrir un émulateur iphone ou android si vous en avez un installé sur votre ordinateur.
