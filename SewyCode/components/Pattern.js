@@ -163,9 +163,9 @@ export function Pattern() {
     let controlY4 = yQ + 40;
 
     const widthMax =
-      Math.max(xDebut, xA, xB, xD, xE, xF, xH, xI, xL, xM) / ptsPerCm;
+      Math.max(xDebut, xA, xB, xD, xE, xF, xH, xI, xL, xM) / ptsPerCm + 3; //J'ai rajouté une marge de 3 afin que le trait à la limite soit bien visible
     const heightMax =
-      Math.max(yDebut, yA, yB, yD, yE, yF, yH, yI, yK, yL, yM) / ptsPerCm;
+      Math.max(yDebut, yA, yB, yD, yE, yF, yH, yI, yK, yL, yM) / ptsPerCm + 3; //J'ai rajouté une marge de 3 afin que le trait à la limite soit bien visible
 
     let svg = `
     <svg xmlns="http://www.w3.org/2000/svg" 
@@ -178,45 +178,33 @@ export function Pattern() {
 
 
       <!-- AB -->
-      <line x1="${xA}" y1="${yA}" x2="${xB}" y2="${yB}" stroke="blue" stroke-width="2"/>
+      <line x1="${xA}" y1="${yA}" x2="${xB}" y2="${yB}" stroke="black" stroke-width="2"/>
       
       <!-- AD-->
-      <line x1="${xA}" y1="${yA}" x2="${xD}" y2="${yD}" stroke="red" stroke-width="2"/>
+      <line x1="${xA}" y1="${yA}" x2="${xD}" y2="${yD}" stroke="black" stroke-width="2"/>
       
       <!-- GE -->
       <path d="M${xG} ${yG} Q${
       (xG + xE) / 2
-    } ${yE}, ${xE} ${yE}" fill="none" stroke="purple" stroke-width="2"/>
-      
-      <!-- AE -->
-      <line x1="${xA}" y1="${yA}" x2="${xE}" y2="${yE}" stroke="green" stroke-width="2" stroke-dasharray="5,5"/>
+    } ${yE}, ${xE} ${yE}" fill="none" stroke="black" stroke-width="2"/>
       
       <!-- EE1 -->
-      <line x1="${xE}" y1="${yE}" x2="${xE1}" y2="${yE1}" stroke="green" stroke-width="2"/>
+      <line x1="${xE}" y1="${yE}" x2="${xE1}" y2="${yE1}" stroke="black" stroke-width="2"/>
       
       <!-- GL1 -->
-      <line x1="${xG}" y1="${yG}" x2="${xL1}" y2="${yL1}" stroke="orange" stroke-width="2"/>
-      
-      <!-- AF -->
-      <line x1="${xA}" y1="${yA}" x2="${xF}" y2="${yF}" stroke="green" stroke-width="2" stroke-dasharray="5,5"/>
+      <line x1="${xG}" y1="${yG}" x2="${xL1}" y2="${yL1}" stroke="black" stroke-width="2"/>
       
       <!-- FF1 -->
-      <line x1="${xF}" y1="${yF}" x2="${xF1}" y2="${yF1}" stroke="brown" stroke-width="2"/>
+      <line x1="${xF}" y1="${yF}" x2="${xF1}" y2="${yF1}" stroke="black" stroke-width="2"/>
       
       <!-- DD1 -->
-      <line x1="${xD}" y1="${yD}" x2="${xD1}" y2="${yD1}" stroke="blue" stroke-width="2"/>
+      <line x1="${xD}" y1="${yD}" x2="${xD1}" y2="${yD1}" stroke="black" stroke-width="2"/>
       
       <!-- F1D1 -->
-      <line x1="${xF1}" y1="${yF1}" x2="${xD1}" y2="${yD1}" stroke="green" stroke-width="2"/>
-      
-      <!-- HL -->
-      <line x1="${xH}" y1="${yH}" x2="${xL}" y2="${yL}" stroke="purple" stroke-width="2" stroke-dasharray="5,5"/>
-      
-      <!-- HI -->
-      <line x1="${xH}" y1="${yH}" x2="${xI}" y2="${yI}" stroke="purple" stroke-width="2" stroke-dasharray="5,5"/>
-      
+      <line x1="${xF1}" y1="${yF1}" x2="${xD1}" y2="${yD1}" stroke="black" stroke-width="2"/>
+        
       <!-- L1F1 -->
-      <path d="M${xL1} ${yL1} C${controlX1} ${controlY1}, ${controlX2} ${controlY2}, ${xF1} ${yF1}" fill="none" stroke="red" stroke-width="2"/>
+      <path d="M${xL1} ${yL1} C${controlX1} ${controlY1}, ${controlX2} ${controlY2}, ${xF1} ${yF1}" fill="none" stroke="black" stroke-width="2"/>
 
 
 
@@ -224,30 +212,22 @@ export function Pattern() {
 
 
       <!-- JC -->
-      <line x1="${xJ}" y1="${yJ}" x2="${xC}" y2="${yC}" stroke="red" stroke-width="2"/>
+      <line x1="${xJ}" y1="${yJ}" x2="${xC}" y2="${yC}" stroke="black" stroke-width="2"/>
       
-      <!-- CB1 -->
-      <line x1="${xC}" y1="${yC}" x2="${xB1}" y2="${yB1}" stroke="red" stroke-width="2" stroke-dasharray="5,5"/>
-      
-    <!-- KJ -->
-      <path d="M${xK} ${yK} Q${xK} ${yJ}, ${xJ} ${yJ}" fill="none" stroke="purple" stroke-width="2"/>
+      <!-- KJ -->
+      <path d="M${xK} ${yK} Q${xK} ${yJ}, ${xJ} ${yJ}" fill="none" stroke="black" stroke-width="2"/>
     
-      
-      <!-- NL2 -->
-      <line x1="${xN}" y1="${yN}" x2="${xL2}" y2="${yL2}" stroke="purple" stroke-width="2" stroke-dasharray="5,5"/>
-      
       <!-- KL3 -->
-      <line x1="${xK}" y1="${yK}" x2="${xL3}" y2="${yL3}" stroke="orange" stroke-width="2"/>
+      <line x1="${xK}" y1="${yK}" x2="${xL3}" y2="${yL3}" stroke="black" stroke-width="2"/>
       
       <!-- CD2 -->
-      <line x1="${xC}" y1="${yC}" x2="${xD2}" y2="${yD2}" stroke="blue" stroke-width="2"/>
+      <line x1="${xC}" y1="${yC}" x2="${xD2}" y2="${yD2}" stroke="black" stroke-width="2"/>
       
       <!-- F3D2 -->
-      <line x1="${xF3}" y1="${yF3}" x2="${xD2}" y2="${yD2}" stroke="green" stroke-width="2"/>
-  
+      <line x1="${xF3}" y1="${yF3}" x2="${xD2}" y2="${yD2}" stroke="black" stroke-width="2"/>
       
       <!-- L3F3 -->
-      <path d="M${xL3} ${yL3} C${controlX3} ${controlY3}, ${controlX4} ${controlY4}, ${xF3} ${yF3}" fill="none" stroke="red" stroke-width="2"/>
+      <path d="M${xL3} ${yL3} C${controlX3} ${controlY3}, ${controlX4} ${controlY4}, ${xF3} ${yF3}" fill="none" stroke="black" stroke-width="2"/>
       
     </svg>
     `;
