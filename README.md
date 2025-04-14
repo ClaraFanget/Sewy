@@ -6,6 +6,8 @@ Ce projet se compose de deux parties :
 
 ## Installation du projet
 
+**Attention veillez à être connecté au même réseau sécurisé entre le téléphone et l'ordinateur.**
+
 ### 1. Lancer l'API
 
 Ouvrir une première fenêtre VSCode dans le dossier `API` puis exécuter :
@@ -28,5 +30,5 @@ npm install
 ```bash
 npx expo start
 ```
-Pour visualiser l'application vous pouvez télécharger expo go sur votre téléphone et scanner le QR Code. **Attention** à être connecté au même réseau sécurisé entre le téléphone et l'ordinateur.
-Sinon pour vous tapez "i" ou "a" dans le terminal pour ouvrir un émulateur iphone ou android si vous en avez un installé sur votre ordinateur.
+Pour visualiser l'application vous pouvez télécharger expo go sur votre téléphone et scanner le QR Code qui s'est affiché en console au lancement de l'application. 
+Sinon pour vous pouvez tapez "i" ou "a" dans la console pour ouvrir un émulateur iphone ou android si vous en avez un installé sur votre ordinateur.
